@@ -7,8 +7,8 @@ from core.config import conf
 EMAIL_HOST = 'smtp.gmail.com'
 EMAIL_PORT = 465
 
-EMAIL_USER = conf.redis.EMAIL_USER
-EMAIL_PASSWORD = conf.redis.EMAIL_PASSWORD
+EMAIL_USER = conf.email.EMAIL_USER
+EMAIL_PASSWORD = conf.email.EMAIL_PASSWORD
 
 RECEIVER = 'ochildiyevajasmina@gmail.com'
 

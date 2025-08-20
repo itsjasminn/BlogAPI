@@ -21,8 +21,15 @@ class DatabaseConfig:
 
 @dataclass
 class RedisConfig:
+    pass
+
+
+@dataclass
+class EmailConfig:
     EMAIL_USER = os.getenv("EMAIL_USER")
     EMAIL_PASSWORD = os.getenv("EMAIL_PASSWORD")
+    EMAIL_HOST = os.getenv("EMAIL_HOST")
+    EMAIL_PORT = os.getenv("EMAIL_PORT")
 
 
 @dataclass
@@ -35,6 +42,7 @@ class Configuration:
     db = DatabaseConfig()
     redis = RedisConfig()
     bot = BotConfig()
+    email = EmailConfig()
 
 
 conf = Configuration()
