@@ -1,0 +1,117 @@
+import re
+
+from django.core.validators import validate_email, RegexValidator
+from rest_framework.exceptions import ValidationError
+from rest_framework.fields import CharField
+from rest_framework.serializers import ModelSerializer, Serializer
+
+from authentication.models import User
+
+
+class UserModelSerializer(ModelSerializer):
+    class Meta:
+        model = User
+        fields = ('first_name', 'last_name', 'email', 'username', 'password', 'avatar', 'bio', 'location',)
+        read_only_fields = ('id', 'created_at', 'updated_at')
+
+    username_validator = RegexValidator(
+        regex=r'^[a-zA-Z0-9_.-]+$',
+        message="Foydalanuvchi nomida faqat harflar, raqamlar, nuqta, pastki chiziq va chiziqcha bo‘lishi mumkin."
+    )
+
+    def validate_username(self, value):
+        self.username_validator(value)
+
+        if len(value) < 3:
+            raise ValidationError("Foydalanuvchi nomi 3 ta belgidan kam bo‘lmasligi kerak.")
+
+        reserved = ["admin", "root", "system", "null"]
+        if value.lower() in reserved:
+            raise ValidationError("This username is not allowed.")
+
+        if User.objects.filter(username__iexact=value).exists():
+            raise ValidationError("This username is already taken.")
+
+        return value
+
+    def validate_email(self, value):
+        try:
+            validate_email(value)
+        except ValidationError:
+            raise ValidationError('Elektron pochta manzili yaroqsiz')
+
+        if User.objects.filter(email=value).exists():
+            raise ValidationError('Bu elektron pochta manzili ro‘yxatdan o‘tgan')
+
+        return value
+
+    def validate_password(self, value):
+        if len(value) < 3:
+            raise ValidationError('Parol uzunligi kamida 4 ta belgi bo‘lishi lozim.')
+        if len(value) > 20:
+            raise ValidationError('Parol 20 ta belgidan ortiq bo‘lmasligi kerak.')
+        if not re.search(r'\d', value):
+            raise ValidationError('Parolda kamida bitta son bo‘lishi lozim.')
+        if not re.search(r'[A-Za-z]', value):
+            raise ValidationError('Parolda kamida bitta harf bo‘lishi lozim.')
+
+        return value
+
+    def validate_avatar(self, value):
+        if value and not value.name.lower().endswith(('.jpg', 'jpeg', 'png')):
+            raise ValidationError('Avatar must be an image.')
+        return value
+
+    def create(self, validated_data):
+        password = validated_data.pop('password')
+        user = User(**validated_data)
+        user.set_password(password)
+        user.save()
+        return user
+
+
+class UserUpdateSerializer(UserModelSerializer):
+    class Meta:
+        model = User
+        fields = ('first_name', 'last_name', 'avatar', 'username', 'bio', 'location')
+
+    def update(self, instance, validated_data):
+        for attr, value in validated_data.items():
+            setattr(instance, attr, value)
+        instance.save()
+        return instance
+
+
+class ChangePasswordSerializer(Serializer):
+    old_password = CharField(write_only=True, required=True)
+    new_password = CharField(write_only=True, required=True)
+    confirm_password = CharField(write_only=True, required=True)
+
+    def validate_old_password(self, value):
+        user = self.context['request'].user
+        if not user.check_password(value):
+            raise ValidationError("Parol noto'g'ri")
+        return value
+
+    def validate(self, attrs):
+        new_password = attrs.get('new_password')
+        confirm_password = attrs.get('confirm_password')
+
+        if new_password != confirm_password:
+            raise ValidationError('Kiritilgan parollar o‘zaro mos emas.')
+        if len(new_password) < 4:
+            raise ValidationError('Parol kamida 4 ta belgidan iborat bo‘lishi kerak.')
+        if len(new_password) > 20:
+            raise ValidationError('Parol 20 ta belgidan oshmasligi kerak.')
+        if not re.search(r'\d', new_password):
+            raise ValidationError('Parol kamida bitta raqamdan iborat bo‘lishi kerak.')
+        if not re.search(r'[A-Za-z]', new_password):
+            raise ValidationError('Parol kamida bitta harfdan iborat bo‘lishi kerak.')
+
+        return attrs
+
+    def save(self, **kwargs):
+        user = self.context['request'].user
+        user.set_password(self.validated_data['new_password'])
+        user.save()
+        return user
