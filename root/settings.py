@@ -19,7 +19,6 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     # my apps
     'authentication',
-
     # DRF
     'rest_framework',
     'drf_spectacular',
