@@ -21,7 +21,7 @@ class DatabaseConfig:
 
 @dataclass
 class RedisConfig:
-    pass
+    REDIS_URL: str = os.getenv("REDIS_URL")
 
 
 @dataclass

@@ -1,6 +1,6 @@
 from drf_spectacular.utils import extend_schema
 from rest_framework.generics import CreateAPIView, UpdateAPIView, ListAPIView, RetrieveAPIView, DestroyAPIView
-from rest_framework.permissions import IsAuthenticated
+from rest_framework.permissions import IsAuthenticated, AllowAny
 
 from authentication.models import User
 from authentication.serializers import UserModelSerializer, UserUpdateSerializer, ChangePasswordSerializer
@@ -10,6 +10,7 @@ from authentication.serializers import UserModelSerializer, UserUpdateSerializer
 class UserCreateAPIView(CreateAPIView):
     queryset = User.objects.all()
     serializer_class = UserModelSerializer
+    permission_classes = [AllowAny]
 
 
 @extend_schema(tags=['auth'])
