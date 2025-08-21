@@ -1,10 +1,14 @@
-from drf_spectacular.utils import extend_schema, OpenApiParameter
-from rest_framework.generics import CreateAPIView, UpdateAPIView, ListAPIView, RetrieveAPIView, DestroyAPIView
-from rest_framework.permissions import IsAuthenticated
+from http import HTTPStatus
 
-from authentication.models import User, Follow
+from drf_spectacular.utils import extend_schema, OpenApiParameter
+from rest_framework.generics import CreateAPIView, UpdateAPIView, ListAPIView, RetrieveAPIView, DestroyAPIView, \
+    GenericAPIView
+from rest_framework.permissions import IsAuthenticated
+from rest_framework.response import Response
+
+from authentication.models import User, Follow, Topic
 from authentication.serializers import UserModelSerializer, UserUpdateSerializer, ChangePasswordSerializer, \
-    FollowingModelSerializer
+    FollowingModelSerializer, TopicModelSerializer, FollowTopicSerializer
 
 
 @extend_schema(tags=['auth'])
@@ -84,3 +88,27 @@ class FollowsListAPiView(ListAPIView):
         if following:
             query = query.filter(following=self.request.user)
         return query
+
+
+@extend_schema(tags=['topics'])
+class TopicCreateAPIView(CreateAPIView):
+    serializer_class = TopicModelSerializer
+
+
+@extend_schema(tags=['topics'])
+class TopicListApiView(ListAPIView):
+    queryset = Topic.objects.all()
+    serializer_class = TopicModelSerializer
+
+@extend_schema(tags=['follow_toppics'])
+class FollowTopicGenericAPIView(GenericAPIView):
+    serializer_class = FollowTopicSerializer
+
+    def post(self, request):
+        serializer = self.get_serializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        topic_id = serializer.validated_data.get('topic_id')
+        request.user.topic_followed.add(topic_id)
+        return Response({'message': 'Topic saved'}, status=HTTPStatus.OK)
+
+

@@ -21,12 +21,20 @@ class User(AbstractUser):
         SYRDARYA = "Syrdarya", "Sirdaryo, O'zbekiston"
         KARAKALPAKSTAN = "Karakalpakstan", "Qoraqalpog'iston Respublikasi"
 
+    class RoleType(TextChoices):
+        ADMIN = "admin", "Admin"
+        MODERATOR = "moderator", "Moderator"
+        USER = 'user', 'User'
+
+    # Extra fields
     reputation = IntegerField(default=0)
     avatar = ImageField(upload_to='avatars/%Y/%m/%d/', null=True, blank=True)
     email = EmailField(max_length=255, unique=True)
     bio = RichTextField(null=True, blank=True)
     location = CharField(max_length=50, choices=AddressType.choices, null=True, blank=True)
     two_factor = BooleanField(default=False)
+    role = CharField(max_length=25, choices=RoleType.choices, default=RoleType.USER)
+    topic_followed = ManyToManyField('authentication.Topic', related_name='topic_followed')
 
     USERNAME_FIELD = 'email'
     REQUIRED_FIELDS = ['username']
@@ -34,27 +42,56 @@ class User(AbstractUser):
     objects = UserManager()
 
     def __str__(self):
-        return self.first_name + " " + self.last_name
+        return self.username
 
     @property
     def full_name(self):
-        return "%s %s" % (self.first_name, self.last_name)
+        return f"{self.first_name} {self.last_name}"
 
 
+# ------------------------
+# 2. FOLLOW (Social graph)
+# ------------------------
 class Follow(Model):
     class Meta:
         unique_together = ("follower", "following")
 
-    follower = ForeignKey('authentication.User', related_name='follower', on_delete=CASCADE)
-    following = ForeignKey('authentication.User', related_name='following', on_delete=CASCADE)
+    follower = ForeignKey(User, related_name='following_set', on_delete=CASCADE)
+    following = ForeignKey(User, related_name='followers_set', on_delete=CASCADE)
     created_at = DateTimeField(auto_now_add=True)
 
     def __str__(self):
         return f"{self.follower.username} -> {self.following.username}"
 
 
+# ------------------------
+# 3. TOPICS
+# ------------------------
+class Topic(Model):
+    name = CharField(max_length=100, unique=True)
+    description = RichTextField(null=True, blank=True)
+
+    def __str__(self):
+        return self.name
+
+
+# ------------------------
+# 4. BLOGS
+# ------------------------
+class Blog(Model):
+    author = ForeignKey(User, related_name='blogs', on_delete=CASCADE)
+    title = CharField(max_length=255)
+    content = RichTextField()
+    tags = CharField(max_length=255)
+    likes = ManyToManyField('authentication.User', related_name='blog_likes')
+    created_at = DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return self.title
+
+
 class Comment(Model):
-    blog = ForeignKey('authentication.Blog', on_delete=CASCADE, related_name="comments")
+    blog = ForeignKey(Blog, on_delete=CASCADE, related_name="comments")
     author = ForeignKey(User, on_delete=CASCADE)
     content = RichTextField()
     created_at = DateTimeField(auto_now_add=True)
@@ -68,7 +105,6 @@ class Question(Model):
     title = CharField(max_length=255)
     content = RichTextField()
     created_at = DateTimeField(auto_now_add=True)
-    topics = CharField(max_length=200, blank=True)
 
     def __str__(self):
         return self.title
@@ -86,34 +122,28 @@ class Answer(Model):
         return f"Answer by {self.author.username}"
 
 
-class Blog(Model):
-    author = ForeignKey('authentication.User', related_name='blogs', on_delete=CASCADE)
-    title = CharField(max_length=255)
-    content = RichTextField()
-    tags = CharField(max_length=255)
-    created_at = DateTimeField(auto_now_add=True)
-    likes = ManyToManyField('authentication.User', related_name='blogs_users', blank=True)
-
-
 class Notifications(Model):
     class NotificationType(TextChoices):
-        NEW_FOLLOWER = 'new follower', 'New Follower'
-        ANSWER_UPVOTE = 'answer upvote', 'Answer Upvote'
-        BLOG_COMMENT = 'blog comment', 'Blog Comment'
-        WARNING = 'warning', 'MODERATOR Comment'
+        NEW_FOLLOWER = 'new_follower', 'New Follower'
+        ANSWER_UPVOTE = 'answer_upvote', 'Answer Upvote'
+        BLOG_COMMENT = 'blog_comment', 'Blog Comment'
+        WARNING = 'warning', 'Moderator Warning'
 
     recipient = ForeignKey(User, on_delete=CASCADE, related_name="notifications")
-    type = CharField(max_length=20, choices=NotificationType, default=NotificationType.NEW_FOLLOWER)
+    type = CharField(max_length=20, choices=NotificationType.choices, default=NotificationType.NEW_FOLLOWER)
     message = RichTextField()
     created_at = DateTimeField(auto_now_add=True)
     is_read = BooleanField(default=False)
+
+    def __str__(self):
+        return f"Notification for {self.recipient.username}"
 
 
 class Badge(Model):
     name = CharField(max_length=255, unique=True)
     description = RichTextField(null=True, blank=True)
     icon = ImageField(upload_to='badges/%Y/%m/%d/', null=True, blank=True)
-    users = ManyToManyField('authentication.User', related_name='badges_users', blank=True)
+    users = ManyToManyField(User, related_name='badges', blank=True)
 
     def __str__(self):
         return self.name

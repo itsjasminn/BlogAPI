@@ -1,7 +1,8 @@
 from django.urls import path
 from rest_framework_simplejwt.views import TokenObtainPairView, TokenRefreshView
 
-from authentication.views import UserCreateAPIView, UserUpdateAPIView, UserDeleteAPIView, UserRetrieveAPIView
+from authentication.views import UserCreateAPIView, UserUpdateAPIView, UserDeleteAPIView, UserRetrieveAPIView, \
+    TopicCreateAPIView, TopicListApiView, FollowTopicGenericAPIView
 from authentication.views import UserListAPIView, ChangePasswordAPIView, FollowingCreateAPIView, FollowsListAPiView
 
 urlpatterns = [
@@ -16,6 +17,9 @@ urlpatterns = [
 ]
 
 urlpatterns += [
-    path('following', FollowingCreateAPIView.as_view()),
-    path('follows/list', FollowsListAPiView.as_view()),
+    path('following/', FollowingCreateAPIView.as_view()),
+    path('follows/list/', FollowsListAPiView.as_view()),
+    path('topics/create/', TopicCreateAPIView.as_view()),
+    path('topics/list/', TopicListApiView.as_view()),
+    path('follow/topic/', FollowTopicGenericAPIView.as_view()),
 ]

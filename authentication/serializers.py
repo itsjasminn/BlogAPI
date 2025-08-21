@@ -2,17 +2,17 @@ import re
 
 from django.core.validators import validate_email, RegexValidator
 from rest_framework.exceptions import ValidationError
-from rest_framework.fields import CharField
+from rest_framework.fields import CharField, IntegerField
 from rest_framework.serializers import ModelSerializer, Serializer
 
-from authentication.models import User, Follow
+from authentication.models import User, Follow, Topic
 
 
 class UserModelSerializer(ModelSerializer):
     class Meta:
         model = User
         fields = ('first_name', 'last_name', 'email', 'username', 'password', 'avatar', 'bio', 'location',)
-        read_only_fields = ('id', 'created_at', 'updated_at')
+        read_only_fields = ('id', 'date_joined', 'last_login')
 
     username_validator = RegexValidator(
         regex=r'^[a-zA-Z0-9_.-]+$',
@@ -117,16 +117,24 @@ class ChangePasswordSerializer(Serializer):
         return user
 
 
-
-
 class FollowingModelSerializer(ModelSerializer):
     class Meta:
-        model=Follow
-        fields=('following','follower','created_at')
-        read_only_fields=('created_at','follower')
+        model = Follow
+        fields = ('following', 'follower', 'created_at')
+        read_only_fields = ('created_at', 'follower')
 
     def validate_following(self, value):
         user = self.context['request'].user
         if user == value:
             raise ValidationError("Siz ozingizga ozingiz obuna bololmaysiz")
         return value
+
+
+class TopicModelSerializer(ModelSerializer):
+    class Meta:
+        model = Topic
+        fields = ('name', 'description')
+
+
+class FollowTopicSerializer(Serializer):
+    topic_id = IntegerField(required=True)
