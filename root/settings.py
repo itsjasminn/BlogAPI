@@ -106,7 +106,6 @@ REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': (
         'rest_framework_simplejwt.authentication.JWTAuthentication',
     )
-
 }
 
 SPECTACULAR_SETTINGS = {
@@ -145,3 +144,6 @@ CKEDITOR_CONFIGS = {
         ]
     }
 }
+
+# settings.py
+DATA_UPLOAD_MAX_NUMBER_FIELDS = 2000  # yoki sizga kerakli limit
