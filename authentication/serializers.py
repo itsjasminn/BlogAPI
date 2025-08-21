@@ -2,7 +2,7 @@ import re
 
 from django.core.validators import validate_email, RegexValidator
 from rest_framework.exceptions import ValidationError
-from rest_framework.fields import CharField
+from rest_framework.fields import CharField, EmailField
 from rest_framework.serializers import ModelSerializer, Serializer
 
 from authentication.models import User
@@ -68,6 +68,15 @@ class UserModelSerializer(ModelSerializer):
         user.set_password(password)
         user.save()
         return user
+
+
+class SendVerificationSerializer(Serializer):
+    email = EmailField()
+
+
+class VerifyCodeSerializer(Serializer):
+    email = EmailField()
+    code = CharField(max_length=6)
 
 
 class UserUpdateSerializer(UserModelSerializer):

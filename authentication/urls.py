@@ -2,11 +2,13 @@ from django.urls import path
 from rest_framework_simplejwt.views import TokenObtainPairView, TokenRefreshView
 
 from authentication.views import UserCreateAPIView, UserUpdateAPIView, UserDeleteAPIView, UserRetrieveAPIView, \
-    UserListAPIView, ChangePasswordAPIView
+    UserListAPIView, ChangePasswordAPIView, SendOTPView, VerifyOTPView
 
 urlpatterns = [
     path('api/token/', TokenObtainPairView.as_view(), name='token_obtain_pair'),
     path('api/token/refresh/', TokenRefreshView.as_view(), name='token_refresh'),
+    path('auth/send-otp/', SendOTPView.as_view(), name='send-otp'),
+    path('auth/verify-otp/', VerifyOTPView.as_view(), name='verify-otp'),
     path('user-create', UserCreateAPIView.as_view()),
     path('user-update/<int:pk>', UserUpdateAPIView.as_view()),
     path('user-delete/<int:pk>', UserDeleteAPIView.as_view()),

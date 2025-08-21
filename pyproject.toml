@@ -13,6 +13,7 @@ dependencies = [
     "drf-spectacular[sidecar]>=0.28.0",
     "jinja2>=3.1.6",
     "markdown>=3.8.2",
+    "orjson>=3.11.2",
     "pillow>=11.3.0",
     "redis>=6.4.0",
 ]
