@@ -8,8 +8,8 @@ from rest_framework.views import APIView
 from authentication.models import User
 from authentication.serializers import UserModelSerializer, UserUpdateSerializer, ChangePasswordSerializer, \
     SendVerificationSerializer, VerifyCodeSerializer
-from authentication.services import OTPServices
-from authentication.utils import send_verification_code
+from authentication.services import OtpService
+from authentication.utils import generate_code
 
 
 @extend_schema(tags=['auth'])
@@ -56,29 +56,43 @@ class ChangePasswordAPIView(UpdateAPIView):
     serializer_class = ChangePasswordSerializer
 
 
-otp_service = OTPServices()
+
+from rest_framework.views import APIView
+from rest_framework.response import Response
+from rest_framework import status
+
+from authentication.serializers import SendVerificationSerializer, VerifyCodeSerializer, UserModelSerializer
+from authentication.services import OtpService
+from authentication.utils import generate_code
+from authentication.models import User
+
+
+otp_service = OtpService()
 
 
 class SendOTPView(APIView):
+    permission_classes = [AllowAny]
+
     def post(self, request):
         serializer = SendVerificationSerializer(data=request.data)
         serializer.is_valid(raise_exception=True)
 
         email = serializer.validated_data['email']
-        code = otp_service.generate_code()
+        code = generate_code()
 
-        success, ttl = otp_service.set_code(email, str(code))
+        success, ttl = otp_service.set_code_email(email, str(code))
         if not success:
             return Response(
                 {"detail": f"Please wait {ttl} seconds before requesting another code."},
                 status=status.HTTP_429_TOO_MANY_REQUESTS
             )
 
-        send_verification_code(email, code)
         return Response({"detail": "Verification code sent."}, status=status.HTTP_200_OK)
 
 
 class VerifyOTPView(APIView):
+    permission_classes = [AllowAny]
+
     def post(self, request):
         serializer = VerifyCodeSerializer(data=request.data)
         serializer.is_valid(raise_exception=True)
@@ -86,7 +100,12 @@ class VerifyOTPView(APIView):
         email = serializer.validated_data['email']
         code = serializer.validated_data['code']
 
-        if otp_service.verify_code(email, code):
+        verified, user_data = otp_service.verify_email(email, code)
+        if verified:
+            if user_data:
+                user = User.objects.create_user(**user_data)
+                return Response({"detail": "User registered successfully!"}, status=status.HTTP_201_CREATED)
+
             return Response({"detail": "Email verified successfully!"}, status=status.HTTP_200_OK)
 
         return Response({"detail": "Invalid or expired code."}, status=status.HTTP_400_BAD_REQUEST)
