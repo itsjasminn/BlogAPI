@@ -26,7 +26,6 @@ class User(AbstractUser):
         MODERATOR = "moderator", "Moderator"
         USER = 'user', 'User'
 
-    # Extra fields
     reputation = IntegerField(default=0)
     avatar = ImageField(upload_to='avatars/%Y/%m/%d/', null=True, blank=True)
     email = EmailField(max_length=255, unique=True)
@@ -49,9 +48,6 @@ class User(AbstractUser):
         return f"{self.first_name} {self.last_name}"
 
 
-# ------------------------
-# 2. FOLLOW (Social graph)
-# ------------------------
 class Follow(Model):
     class Meta:
         unique_together = ("follower", "following")
@@ -64,9 +60,6 @@ class Follow(Model):
         return f"{self.follower.username} -> {self.following.username}"
 
 
-# ------------------------
-# 3. TOPICS
-# ------------------------
 class Topic(Model):
     name = CharField(max_length=100, unique=True)
     description = RichTextField(null=True, blank=True)
@@ -75,9 +68,6 @@ class Topic(Model):
         return self.name
 
 
-# ------------------------
-# 4. BLOGS
-# ------------------------
 class Blog(Model):
     author = ForeignKey(User, related_name='blogs', on_delete=CASCADE)
     title = CharField(max_length=255)
