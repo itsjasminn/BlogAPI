@@ -48,67 +48,6 @@ class Follow(Model):
         return f"{self.follower.username} -> {self.following.username}"
 
 
-class Blog(Model):
-    author = ForeignKey(User, related_name='blogs', on_delete=CASCADE)
-    title = CharField(max_length=255)
-    content = RichTextField()
-    tags = CharField(max_length=255)
-    likes = ManyToManyField('authentication.User', related_name='blog_likes')
-    created_at = DateTimeField(auto_now_add=True)
-
-    def __str__(self):
-        return self.title
-
-
-class Comment(Model):
-    blog = ForeignKey(Blog, on_delete=CASCADE, related_name="comments")
-    author = ForeignKey(User, on_delete=CASCADE)
-    content = RichTextField()
-    created_at = DateTimeField(auto_now_add=True)
-
-    def __str__(self):
-        return f"Comment by {self.author.username}"
-
-
-class Question(Model):
-    author = ForeignKey(User, on_delete=CASCADE, related_name="questions")
-    title = CharField(max_length=255)
-    content = RichTextField()
-    created_at = DateTimeField(auto_now_add=True)
-
-    def __str__(self):
-        return self.title
-
-
-class Answer(Model):
-    question = ForeignKey(Question, on_delete=CASCADE, related_name="answers")
-    author = ForeignKey(User, on_delete=CASCADE)
-    content = RichTextField()
-    created_at = DateTimeField(auto_now_add=True)
-    upvotes = ManyToManyField(User, related_name="upvoted_answers", blank=True)
-    downvotes = ManyToManyField(User, related_name="downvoted_answers", blank=True)
-
-    def __str__(self):
-        return f"Answer by {self.author.username}"
-
-
-class Notifications(Model):
-    class NotificationType(TextChoices):
-        NEW_FOLLOWER = 'new_follower', 'New Follower'
-        ANSWER_UPVOTE = 'answer_upvote', 'Answer Upvote'
-        BLOG_COMMENT = 'blog_comment', 'Blog Comment'
-        WARNING = 'warning', 'Moderator Warning'
-
-    recipient = ForeignKey(User, on_delete=CASCADE, related_name="notifications")
-    type = CharField(max_length=20, choices=NotificationType.choices, default=NotificationType.NEW_FOLLOWER)
-    message = RichTextField()
-    created_at = DateTimeField(auto_now_add=True)
-    is_read = BooleanField(default=False)
-
-    def __str__(self):
-        return f"Notification for {self.recipient.username}"
-
-
 class Badge(Model):
     name = CharField(max_length=255, unique=True)
     description = RichTextField(null=True, blank=True)
