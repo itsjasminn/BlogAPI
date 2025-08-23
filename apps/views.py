@@ -5,7 +5,7 @@ from rest_framework.generics import CreateAPIView, ListAPIView, DestroyAPIView, 
     GenericAPIView
 from rest_framework.response import Response
 
-from apps.models import Blog, BlogImages, Comment, Question, Answer, AnswerComment
+from apps.models import Blog, BlogImages, Comment, Question, Answer, AnswerComment, AnswerView, QuestionView, BlogView
 from apps.serializers import BlogModelSerializer, BlogImagesModelSerializer, CommentModelSerializer, LikeSerializer, \
     QuestionModelSerializer, AnswerModelSerializer, AnswerCommentModelSerializer
 
@@ -56,6 +56,17 @@ class BlogDetailAPIView(RetrieveAPIView):
     serializer_class = BlogModelSerializer
     queryset = Blog.objects.all()
     lookup_field = 'pk'
+
+    def retrieve(self, request, *args, **kwargs):
+        instance = self.get_object()
+
+        if request.user.is_authenticated:
+            BlogView.objects.get_or_create(blog=instance, user=request.user)
+
+        serializer = self.get_serializer(instance)
+        data = serializer.data
+        data['views'] = instance.blog_views.count()
+        return Response(data)
 
 
 @extend_schema(tags=['blog-images'])
@@ -126,6 +137,17 @@ class QuestionDetailAPIView(RetrieveAPIView):
     queryset = Question.objects.all()
     lookup_field = 'pk'
 
+    def retrieve(self, request, *args, **kwargs):
+        instance = self.get_object()
+
+        if request.user.is_authenticated:
+            QuestionView.objects.get_or_create(question=instance, user=request.user)
+
+        serializer = self.get_serializer(instance)
+        data = serializer.data
+        data['views'] = instance.question_views.count()
+        return Response(data)
+
 
 @extend_schema(tags=['answers'])
 class AnswerCreateAPIView(CreateAPIView):
@@ -161,6 +183,17 @@ class AnswerDetailAPIView(RetrieveAPIView):
     serializer_class = AnswerModelSerializer
     queryset = Answer.objects.all()
     lookup_field = 'pk'
+
+    def retrieve(self, request, *args, **kwargs):
+        instance = self.get_object()
+
+        if request.user.is_authenticated:
+            AnswerView.objects.get_or_create(answer=instance, user=request.user)
+
+        serializer = self.get_serializer(instance)
+        data = serializer.data
+        data['views'] = instance.answer_views.count()
+        return Response(data)
 
 
 @extend_schema(tags=['block-comment'])

@@ -1,7 +1,7 @@
 from rest_framework.fields import IntegerField
 from rest_framework.serializers import ModelSerializer, Serializer
 
-from apps.models import Blog, BlogImages, Comment, AnswerComment
+from apps.models import Blog, BlogImages, Comment, AnswerComment, BlogView, AnswerView, QuestionView
 from apps.models import Question, Answer
 from authentication.serializers import UserModelSerializer
 
@@ -11,6 +11,13 @@ class BlogModelSerializer(ModelSerializer):
         model = Blog
         fields = ('id', 'title', 'content', 'tags')
         read_only_fields = ('id', 'created_at', 'author')
+
+
+class BlogViewModelSerializer(ModelSerializer):
+    class Meta:
+        model = BlogView
+        fields = ('user',)
+        read_only_fields = ('viewed_at',)
 
 
 class LikeSerializer(Serializer):
@@ -47,6 +54,13 @@ class QuestionModelSerializer(ModelSerializer):
         return super().update(instance, validated_data)
 
 
+class QuestionViewModelSerializer(ModelSerializer):
+    class Meta:
+        model = QuestionView
+        fields = ('user',)
+        read_only_fields = ('viewed_at',)
+
+
 class AnswerModelSerializer(ModelSerializer):
     author = UserModelSerializer(many=False, read_only=True)
 
@@ -63,6 +77,13 @@ class AnswerModelSerializer(ModelSerializer):
             validated_data['is_edited'] = True
 
         return super().update(instance, validated_data)
+
+
+class AnswerViewModelSerializer(ModelSerializer):
+    class Meta:
+        model = AnswerView
+        fields = ('user',)
+        read_only_fields = ('viewed_at',)
 
 
 class CommentModelSerializer(ModelSerializer):

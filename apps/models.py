@@ -16,8 +16,17 @@ class Blog(Model):
         return self.title
 
 
+class BlogView(Model):
+    class Meta:
+        unique_together = ('blog', 'user')
+
+    user = ForeignKey('authentication.User', on_delete=CASCADE, related_name='blog_views')
+    blog = ForeignKey('apps.Blog', on_delete=CASCADE, related_name='blog_views')
+    viewed_at = DateTimeField(auto_now=True)
+
+
 class BlogImages(Model):
-    blog = ForeignKey('apps.Blog', related_name='images', on_delete=CASCADE)
+    blog = ForeignKey('apps.Blog', on_delete=CASCADE, related_name='images')
     image = ImageField()
 
 
@@ -42,9 +51,18 @@ class Question(Model):
         return self.title
 
 
+class QuestionView(Model):
+    class Meta:
+        unique_together = ('question', 'user')
+
+    question = ForeignKey('apps.Question', on_delete=CASCADE, related_name="question_views")
+    user = ForeignKey('authentication.User', on_delete=CASCADE, related_name="question_views")
+    viewed_at = DateTimeField(auto_now=True)
+
+
 class Answer(Model):
     question = ForeignKey('apps.Question', on_delete=CASCADE, related_name="answers")
-    author = ForeignKey('authentication.User', on_delete=CASCADE)
+    author = ForeignKey('authentication.User', on_delete=CASCADE, related_name="answers")
     content = RichTextField()
     created_at = DateTimeField(auto_now_add=True)
     upvotes = ManyToManyField('authentication.User', related_name="upvoted_answers", blank=True)
@@ -53,6 +71,15 @@ class Answer(Model):
 
     def __str__(self):
         return f"Answer by {self.author.username}"
+
+
+class AnswerView(Model):
+    class Meta:
+        unique_together = ('answer', 'user')
+
+    answer = ForeignKey('apps.Answer', on_delete=CASCADE, related_name="answer_views")
+    user = ForeignKey('authentication.User', on_delete=CASCADE, related_name="answer_views")
+    viewed_at = DateTimeField(auto_now=True)
 
 
 class AnswerComment(Model):
