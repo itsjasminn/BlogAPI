@@ -30,6 +30,7 @@ class UserGenericAPIView(GenericAPIView):
         return Response({'message': 'Tastiqlash kodi jonatilid'}, status=HTTPStatus.OK)
 
 
+@extend_schema(tags=['auth'])
 class VerifyCodeGenericAPIView(GenericAPIView):
     serializer_class = VerifyCodeSerializer
     permission_classes = [AllowAny]
@@ -38,8 +39,8 @@ class VerifyCodeGenericAPIView(GenericAPIView):
         serializer = self.get_serializer(data=request.data)
         serializer.is_valid(raise_exception=True)
         user_data = serializer.context.get('user_data')
-        user=User.objects.create(**user_data)
-        return Response(UserModelSerializer(user).data,status=HTTPStatus.CREATED)
+        user = User.objects.create(**user_data)
+        return Response(UserModelSerializer(user).data, status=HTTPStatus.CREATED)
 
 
 @extend_schema(tags=['auth'])
