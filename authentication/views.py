@@ -2,6 +2,7 @@ from drf_spectacular.utils import extend_schema, OpenApiParameter
 from rest_framework.generics import CreateAPIView, UpdateAPIView, ListAPIView, RetrieveAPIView, DestroyAPIView
 from rest_framework.permissions import IsAuthenticated, AllowAny
 
+from apps.permissions import IsModerator
 from authentication.models import User, Follow
 from authentication.serializers import UserModelSerializer, UserUpdateSerializer, ChangePasswordSerializer, \
     FollowingModelSerializer
@@ -17,7 +18,6 @@ class UserCreateAPIView(CreateAPIView):
 @extend_schema(tags=['auth'])
 class UserUpdateAPIView(UpdateAPIView):
     queryset = User.objects.all()
-    permission_classes = [IsAuthenticated]
     serializer_class = UserUpdateSerializer
     lookup_field = 'pk'
 
@@ -25,7 +25,6 @@ class UserUpdateAPIView(UpdateAPIView):
 @extend_schema(tags=['auth'])
 class UserListAPIView(ListAPIView):
     queryset = User.objects.all()
-    permission_classes = [IsAuthenticated]
     serializer_class = UserModelSerializer
 
 
@@ -33,21 +32,19 @@ class UserListAPIView(ListAPIView):
 class UserRetrieveAPIView(RetrieveAPIView):
     queryset = User.objects.all()
     serializer_class = UserModelSerializer
-    permission_classes = [IsAuthenticated]
     lookup_field = 'pk'
 
 
 @extend_schema(tags=['auth'])
 class UserDeleteAPIView(DestroyAPIView):
     queryset = User.objects.all()
-    permission_classes = [IsAuthenticated]
+    permission_classes = [IsModerator]
     serializer_class = UserModelSerializer
 
 
 @extend_schema(tags=['passwd'])
 class ChangePasswordAPIView(UpdateAPIView):
     queryset = User.objects.all()
-    permission_classes = [IsAuthenticated]
     serializer_class = ChangePasswordSerializer
 
 

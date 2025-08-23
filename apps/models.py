@@ -1,6 +1,5 @@
 from ckeditor.fields import RichTextField
-from django.db.models import DateTimeField
-from django.db.models import Model, ForeignKey, CASCADE, ManyToManyField
+from django.db.models import Model, ForeignKey, CASCADE, ManyToManyField, ImageField, DateTimeField
 from django.db.models.fields import CharField
 
 
@@ -14,6 +13,11 @@ class Blog(Model):
 
     def __str__(self):
         return self.title
+
+
+class BlogImages(Model):
+    blog = ForeignKey('apps.Blog', related_name='images', on_delete=CASCADE)
+    image = ImageField()
 
 
 class Comment(Model):
