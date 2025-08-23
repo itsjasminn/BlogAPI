@@ -2,7 +2,6 @@ import json
 import random
 from http import HTTPStatus
 
-from authentication.tasks import send_code_email
 from drf_spectacular.utils import extend_schema, OpenApiParameter
 from rest_framework.generics import CreateAPIView, UpdateAPIView, ListAPIView, RetrieveAPIView, DestroyAPIView
 from rest_framework.generics import GenericAPIView
@@ -12,6 +11,7 @@ from rest_framework.response import Response
 from authentication.models import User, Follow
 from authentication.serializers import FollowingModelSerializer, VerifyCodeSerializer
 from authentication.serializers import UserModelSerializer, UserUpdateSerializer, ChangePasswordSerializer
+from authentication.tasks import send_code_email
 from root.settings import redis
 
 
