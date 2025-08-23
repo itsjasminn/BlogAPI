@@ -14,7 +14,6 @@ from authentication.serializers import UserModelSerializer, UserUpdateSerializer
 from authentication.tasks import send_code_email
 from root.settings import redis
 
-
 @extend_schema(tags=['auth'])
 class UserGenericAPIView(GenericAPIView):
     serializer_class = UserModelSerializer
