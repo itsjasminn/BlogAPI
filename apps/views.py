@@ -1,8 +1,8 @@
-from drf_spectacular.utils import extend_schema
+from drf_spectacular.utils import extend_schema, OpenApiParameter
 from rest_framework.generics import CreateAPIView, ListAPIView, DestroyAPIView, UpdateAPIView, RetrieveAPIView
 
-from apps.models import Blog, BlogImages
-from apps.serializers import BlogModelSerializer, BlogImagesModelSerializer
+from apps.models import Blog, BlogImages, Comment
+from apps.serializers import BlogModelSerializer, BlogImagesModelSerializer, CommentModelSerializer
 
 
 @extend_schema(tags=['blog'])
@@ -72,3 +72,26 @@ class BlogImagesDestroyAPIView(DestroyAPIView):
 class BlogImagesListAPIView(ListAPIView):
     serializer_class = BlogImagesModelSerializer
     queryset = BlogImages.objects.all()
+
+
+# ==================================================================
+
+
+@extend_schema(tags=['block-comment'])
+class CommentCreatAPIView(CreateAPIView):
+    serializer_class = CommentModelSerializer
+
+    def perform_create(self, serializer):
+        serializer.save(author=self.request.user)
+
+
+@extend_schema(tags=['block-comment'])
+class CommentListAPIView(ListAPIView):
+    serializer_class = CommentModelSerializer
+    queryset = Comment.objects.all()
+
+    def get_queryset(self):
+        query = super().get_queryset()
+        pk = self.kwargs.get('pk')
+        query = query.filter(blog_id=pk).all()
+        return query

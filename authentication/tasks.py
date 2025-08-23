@@ -1,18 +1,27 @@
-from django.core.mail import send_mail
-
-from core.config import EmailConfig
-
+from django.core.mail import EmailMultiAlternatives
+from django.template.loader import render_to_string
 from celery import shared_task
 
+from root.settings import EMAIL_HOST_USER
 
 
 @shared_task
-def send_code_email(user: dict, code):
-    send_mail(
-        subject='!Tasdiqlash kodingiz!',
-        message=f'Sizning tasdiqlash kodingiz:{code}',
-        from_email=EmailConfig.EMAIL_USER,
-        recipient_list=[user.get('email')],
-        fail_silently=False,
-    )
-    return 'Success'
+def send_code_email(user_email: dict, code):
+    subject = "Email Verification"
+    from_email = EMAIL_HOST_USER
+    to = [user_email.get('email')]
+
+    # Context (dynamic data)
+    context = {
+        "code": code,
+        "verify_url": f"http://localhost:8000/verify/{code}"
+    }
+
+    # Render HTML
+    html_content = render_to_string("verification_email.html", context)
+    text_content = f"Your verification code is {code}"  # fallback plain text
+
+    # Create email
+    msg = EmailMultiAlternatives(subject, text_content, from_email, to)
+    msg.attach_alternative(html_content, "text/html")
+    msg.send()

@@ -2,7 +2,7 @@ from django.urls import path
 
 from apps.views import BlogCreateAPIView, BlogListAPIView, BlogDestroyAPIView, BlogUpdateAPIView, BlogDetailAPIView, \
     BlogImagesDetailAPIView, BlogImagesUpdateAPIView, BlogImagesDestroyAPIView, BlogImagesCreateAPIView, \
-    BlogImagesListAPIView
+    BlogImagesListAPIView, CommentCreatAPIView, CommentListAPIView
 
 urlpatterns = [
     path('blog-create', BlogCreateAPIView.as_view()),
@@ -16,4 +16,9 @@ urlpatterns = [
     path('blog-images-update/<int:pk>', BlogImagesUpdateAPIView.as_view()),
     path('blog-images-delete/<int:pk>', BlogImagesDestroyAPIView.as_view()),
 
+]
+
+urlpatterns += [
+    path('commnet', CommentCreatAPIView.as_view()),
+    path('commnet/list/<int:pk>', CommentListAPIView.as_view())
 ]

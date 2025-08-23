@@ -46,7 +46,6 @@ class VerifyCodeGenericAPIView(GenericAPIView):
 @extend_schema(tags=['auth'])
 class UserUpdateAPIView(UpdateAPIView):
     queryset = User.objects.all()
-    permission_classes = [IsAuthenticated]
     serializer_class = UserUpdateSerializer
     lookup_field = 'pk'
 
@@ -54,7 +53,6 @@ class UserUpdateAPIView(UpdateAPIView):
 @extend_schema(tags=['auth'])
 class UserListAPIView(ListAPIView):
     queryset = User.objects.all()
-    permission_classes = [IsAuthenticated]
     serializer_class = UserModelSerializer
 
 
@@ -62,21 +60,18 @@ class UserListAPIView(ListAPIView):
 class UserRetrieveAPIView(RetrieveAPIView):
     queryset = User.objects.all()
     serializer_class = UserModelSerializer
-    permission_classes = [IsAuthenticated]
     lookup_field = 'pk'
 
 
 @extend_schema(tags=['auth'])
 class UserDeleteAPIView(DestroyAPIView):
     queryset = User.objects.all()
-    permission_classes = [IsModerator]
     serializer_class = UserModelSerializer
 
 
 @extend_schema(tags=['passwd'])
 class ChangePasswordAPIView(UpdateAPIView):
     queryset = User.objects.all()
-    permission_classes = [IsAuthenticated]
     serializer_class = ChangePasswordSerializer
 
 

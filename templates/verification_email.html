@@ -1,74 +1,34 @@
 <!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Email Verification</title>
+  <meta charset="UTF-8">
+  <title>Email Verification</title>
 </head>
-<body style="margin:0;padding:0;background:#f3f4f6;font-family:Arial,Helvetica,sans-serif;">
-
-<table width="100%" cellpadding="0" cellspacing="0" border="0" bgcolor="#f3f4f6">
+<body style="margin:0; padding:0; font-family: Arial, sans-serif; background-color:#f9f9f9;">
+  <table align="center" border="0" cellpadding="0" cellspacing="0" width="100%" style="max-width:600px; background:#ffffff; border-radius:8px; box-shadow:0 2px 6px rgba(0,0,0,0.1);">
     <tr>
-        <td align="center" style="padding:40px 20px;">
-
-            <!-- Container -->
-            <table width="600" cellpadding="0" cellspacing="0" border="0"
-                   style="max-width:600px;background:#ffffff;border-radius:16px;overflow:hidden;box-shadow:0 6px 20px rgba(0,0,0,0.08);">
-
-                <!-- Header -->
-                <tr>
-                    <td align="center" bgcolor="#667eea"
-                        style="background:linear-gradient(135deg,#667eea,#764ba2);padding:40px 20px;color:#fff;">
-                        <div style="font-size:32px;font-weight:bold;letter-spacing:-0.5px;">🔐 Verify Your Email</div>
-                        <p style="margin:10px 0 0;font-size:16px;opacity:0.9;">Your security is our priority</p>
-                    </td>
-                </tr>
-
-                <!-- Body -->
-                <tr>
-                    <td style="padding:40px 30px;text-align:center;color:#374151;">
-                        <p style="font-size:18px;line-height:1.6;margin:0 0 25px;">
-                            Hi there 👋 <br>
-                            Use the verification code below to confirm your email address and activate your account.
-                        </p>
-
-                        <!-- Code Box -->
-                        <div style="display:inline-block;background:#f9fafb;border:2px dashed #cbd5e1;padding:20px 30px;border-radius:12px;margin:20px 0;font-size:26px;letter-spacing:8px;font-weight:bold;color:#111827;">
-                            {{ CODE }}
-                        </div>
-
-                        <p style="font-size:14px;color:#6b7280;margin-top:20px;">
-                            This code will expire in <b>15 minutes</b>. <br>
-                            If you didn’t request it, just ignore this email.
-                        </p>
-                    </td>
-                </tr>
-
-                <!-- Button -->
-                <tr>
-                    <td align="center" style="padding:20px;">
-                        <a href="{{ VERIFY_URL }}"
-                           style="display:inline-block;background:linear-gradient(135deg,#667eea,#764ba2);color:#fff;text-decoration:none;padding:14px 30px;border-radius:8px;font-size:16px;font-weight:600;">
-                            Verify Email
-                        </a>
-                    </td>
-                </tr>
-
-                <!-- Footer -->
-                <tr>
-                    <td style="padding:30px;text-align:center;background:#f9fafb;color:#6b7280;font-size:13px;border-top:1px solid #e5e7eb;">
-                        If you need help, contact us at
-                        <a href="mailto:support@example.com"
-                           style="color:#667eea;text-decoration:none;font-weight:500;">support@example.com</a>
-                        <br><br>
-                        © 2025 Bloog. All rights reserved.
-                    </td>
-                </tr>
-
-            </table>
-        </td>
+      <td align="center" bgcolor="#4CAF50" style="padding:20px; border-radius:8px 8px 0 0;">
+        <h1 style="color:#ffffff; margin:0; font-size:24px;">Email Verification</h1>
+      </td>
     </tr>
-</table>
-
+    <tr>
+      <td style="padding:30px; text-align:center;">
+        <p style="font-size:16px; color:#333; margin-bottom:20px;">
+          Tasdiqlash uchun quyidagi kodni kiriting:
+        </p>
+        <div style="display:inline-block; background:#f0f0f0; padding:15px 25px; border-radius:6px; font-size:24px; letter-spacing:4px; font-weight:bold; color:#333; margin:20px 0;">
+          {{ code.code }}
+        </div>
+        <p style="font-size:14px; color:#666; margin-top:20px;">
+          Kod <strong>5 daqiqa</strong> ichida amal qiladi.
+        </p>
+      </td>
+    </tr>
+    <tr>
+      <td bgcolor="#f4f4f4" style="padding:15px; text-align:center; font-size:12px; color:#999; border-radius:0 0 8px 8px;">
+        Agar siz bu so‘rovni qilmagan bo‘lsangiz, ushbu xabarni e’tiborsiz qoldiring.
+      </td>
+    </tr>
+  </table>
 </body>
 </html>
