@@ -1,8 +1,8 @@
-
 from rest_framework.exceptions import ValidationError
 from rest_framework.serializers import ModelSerializer
 
 from apps.models import Blog, BlogImages
+
 
 class BlogModelSerializer(ModelSerializer):
     class Meta:

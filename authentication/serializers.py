@@ -4,7 +4,7 @@ import re
 from django.contrib.auth.hashers import make_password
 from django.core.validators import validate_email, RegexValidator
 from rest_framework.exceptions import ValidationError
-from rest_framework.fields import CharField, EmailField
+from rest_framework.fields import CharField
 from rest_framework.serializers import ModelSerializer, Serializer
 
 from authentication.models import User, Follow
