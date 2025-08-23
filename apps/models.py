@@ -1,5 +1,5 @@
 from ckeditor.fields import RichTextField
-from django.db.models import ImageField, DateTimeField
+from django.db.models import DateTimeField
 from django.db.models import Model, ForeignKey, CASCADE, ManyToManyField
 from django.db.models.fields import CharField
 
@@ -46,13 +46,3 @@ class Answer(Model):
 
     def __str__(self):
         return f"Answer by {self.author.username}"
-
-
-class Badge(Model):
-    name = CharField(max_length=255, unique=True)
-    description = RichTextField(null=True, blank=True)
-    icon = ImageField(upload_to='badges/%Y/%m/%d/', null=True, blank=True)
-    users = ManyToManyField('authentication.User', related_name='badges', blank=True)
-
-    def __str__(self):
-        return self.name

@@ -57,6 +57,7 @@ class Badge(Model):
     def __str__(self):
         return self.name
 
+
 class Notifications(Model):
     class NotificationType(TextChoices):
         NEW_FOLLOWER = 'new_follower', 'New Follower'

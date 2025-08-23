@@ -5,7 +5,7 @@ from rest_framework.exceptions import ValidationError
 from rest_framework.fields import CharField, EmailField
 from rest_framework.serializers import ModelSerializer, Serializer
 
-from authentication.models import User
+from authentication.models import User, Follow
 
 
 class UserModelSerializer(ModelSerializer):
@@ -124,3 +124,16 @@ class ChangePasswordSerializer(Serializer):
         user.set_password(self.validated_data['new_password'])
         user.save()
         return user
+
+
+class FollowingModelSerializer(ModelSerializer):
+    class Meta:
+        model = Follow
+        fields = ('following', 'follower', 'created_at')
+        read_only_fields = ('created_at', 'follower')
+
+    def validate_following(self, value):
+        user = self.context['request'].user
+        if user == value:
+            raise ValidationError("Siz o'zingizga o'zingiz obuna bo'lolmaysiz")
+        return value
