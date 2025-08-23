@@ -131,3 +131,7 @@ class FollowingModelSerializer(ModelSerializer):
         if user == value:
             raise ValidationError("Siz ozingizga ozingiz obuna bololmaysiz")
         return value
+
+''''
+
+'''
