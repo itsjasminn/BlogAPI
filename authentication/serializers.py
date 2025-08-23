@@ -1,4 +1,3 @@
-import json
 import re
 
 from django.contrib.auth.hashers import make_password
@@ -42,10 +41,10 @@ class UserModelSerializer(ModelSerializer):
         try:
             validate_email(value)
         except ValidationError:
-            raise ValidationError('Elektron pochta manzili yaroqsiz')
+            raise ValidationError('Elektron pochta manzili yaroqsiz.')
 
         if User.objects.filter(email=value).exists():
-            raise ValidationError('Bu elektron pochta manzili ro‘yxatdan o‘tgan')
+            raise ValidationError('Bu elektron pochta manzili ro‘yxatdan o‘tgan.')
 
         return value
 

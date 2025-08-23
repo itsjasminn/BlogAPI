@@ -2,9 +2,11 @@ from datetime import timedelta
 from os import getenv
 from os.path import join
 from pathlib import Path
-from core.config import EmailConfig
+
 from dotenv import load_dotenv
 from redis import Redis
+
+from core.config import EmailConfig
 
 load_dotenv()
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -115,8 +117,8 @@ REST_FRAMEWORK = {
 }
 
 SPECTACULAR_SETTINGS = {
-    'TITLE': 'Rent Car API',
-    'DESCRIPTION': 'Rent Car',
+    'TITLE': 'Bloog',
+    'DESCRIPTION': 'Bloog',
     'VERSION': '1.0.0',
     'SERVE_INCLUDE_SCHEMA': False,
     'COMPONENT_SPLIT_REQUEST': True,
@@ -151,8 +153,7 @@ CKEDITOR_CONFIGS = {
     }
 }
 
-# settings.py
-DATA_UPLOAD_MAX_NUMBER_FIELDS = 2000  # yoki sizga kerakli limit
+DATA_UPLOAD_MAX_NUMBER_FIELDS = 2000
 
 redis = Redis.from_url(getenv('REDIS_URL'), decode_responses=True)
 
@@ -168,7 +169,6 @@ EMAIL_HOST_PASSWORD = EmailConfig.EMAIL_PASSWORD
 # =============================================celery==================================
 CELERY_BROKER_URL = getenv('REDIS_URL')
 
-# Natijalarni Redisda saqlashni xohlasangiz:
 CELERY_RESULT_BACKEND = getenv('REDIS_URL')
 
 CELERY_ACCEPT_CONTENT = ['json']
