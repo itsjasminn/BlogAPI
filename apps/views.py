@@ -1,8 +1,9 @@
 from drf_spectacular.utils import extend_schema
 from rest_framework.generics import CreateAPIView, ListAPIView, DestroyAPIView, UpdateAPIView, RetrieveAPIView
 
-from apps.models import Blog, BlogImages, Question
-from apps.serializers import BlogModelSerializer, BlogImagesModelSerializer, QuestionModelSerializer
+from apps.models import Blog, BlogImages, Question, Answer
+from apps.serializers import BlogModelSerializer, BlogImagesModelSerializer, QuestionModelSerializer, \
+    AnswerModelSerializer
 
 
 @extend_schema(tags=['blog'])
@@ -107,4 +108,33 @@ class QuestionUpdateAPIView(UpdateAPIView):
 class QuestionDetailAPIView(RetrieveAPIView):
     serializer_class = QuestionModelSerializer
     queryset = Question.objects.all()
+    lookup_field = 'pk'
+
+
+@extend_schema(tags=['answers'])
+class AnswerCreateAPIView(CreateAPIView):
+    serializer_class = AnswerModelSerializer
+    queryset = Answer.objects.all()
+
+    def perform_create(self, serializer):
+        serializer.save(author=self.request.user)
+
+
+@extend_schema(tags=['answers'])
+class AnswerListAPIView(ListAPIView):
+    serializer_class = AnswerModelSerializer
+    queryset = Answer.objects.all()
+
+
+@extend_schema(tags=['answers'])
+class AnswerDeleteAPIView(DestroyAPIView):
+    serializer_class = AnswerModelSerializer
+    queryset = Answer.objects.all()
+    lookup_field = 'pk'
+
+
+@extend_schema(tags=['answers'])
+class AnswerUpdateAPIView(UpdateAPIView):
+    serializer_class = AnswerModelSerializer
+    queryset = Answer.objects.all()
     lookup_field = 'pk'

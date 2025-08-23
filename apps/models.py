@@ -43,12 +43,13 @@ class Question(Model):
 
 
 class Answer(Model):
-    question = ForeignKey(Question, on_delete=CASCADE, related_name="answers")
+    question = ForeignKey('apps.Question', on_delete=CASCADE, related_name="answers")
     author = ForeignKey('authentication.User', on_delete=CASCADE)
     content = RichTextField()
     created_at = DateTimeField(auto_now_add=True)
     upvotes = ManyToManyField('authentication.User', related_name="upvoted_answers", blank=True)
     downvotes = ManyToManyField('authentication.User', related_name="downvoted_answers", blank=True)
+    is_edited = BooleanField(default=False)
 
     def __str__(self):
         return f"Answer by {self.author.username}"
