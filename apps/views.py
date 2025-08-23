@@ -1,8 +1,14 @@
-from drf_spectacular.utils import extend_schema
-from rest_framework.generics import CreateAPIView, ListAPIView, DestroyAPIView, UpdateAPIView, RetrieveAPIView
+from http import HTTPStatus
 
-from apps.models import Blog, BlogImages, Question, Answer
-from apps.serializers import BlogModelSerializer, BlogImagesModelSerializer, QuestionModelSerializer, \
+from drf_spectacular.utils import extend_schema
+from rest_framework.generics import CreateAPIView, ListAPIView, DestroyAPIView, UpdateAPIView, RetrieveAPIView, \
+    GenericAPIView
+from rest_framework.response import Response
+
+from apps.models import Blog, BlogImages, Comment
+from apps.models import Question, Answer
+from apps.serializers import BlogModelSerializer, BlogImagesModelSerializer, CommentModelSerializer, LikeSerializer
+from apps.serializers import QuestionModelSerializer, \
     AnswerModelSerializer
 
 
@@ -13,6 +19,18 @@ class BlogCreateAPIView(CreateAPIView):
 
     def perform_create(self, serializer):
         serializer.save(author=self.request.user)
+
+
+@extend_schema(tags=['blog'])
+class BlogLikeGenericAPIView(GenericAPIView):
+    serializer_class = LikeSerializer
+
+    def post(self, request):
+        serializer = self.get_serializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        blog = serializer.blog_data
+        blog.likes.add(request.user)
+        return Response({'message': 'like bosildi'}, status=HTTPStatus.OK)
 
 
 @extend_schema(tags=['blog'])
@@ -145,3 +163,26 @@ class AnswerDetailAPIView(RetrieveAPIView):
     serializer_class = AnswerModelSerializer
     queryset = Answer.objects.all()
     lookup_field = 'pk'
+
+
+# ==================================================================
+
+
+@extend_schema(tags=['block-comment'])
+class CommentCreatAPIView(CreateAPIView):
+    serializer_class = CommentModelSerializer
+
+    def perform_create(self, serializer):
+        serializer.save(author=self.request.user)
+
+
+@extend_schema(tags=['block-comment'])
+class CommentListAPIView(ListAPIView):
+    serializer_class = CommentModelSerializer
+    queryset = Comment.objects.all()
+
+    def get_queryset(self):
+        query = super().get_queryset()
+        pk = self.kwargs.get('pk')
+        query = query.filter(blog_id=pk).all()
+        return query

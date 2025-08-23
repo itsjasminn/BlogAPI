@@ -129,5 +129,6 @@ class FollowingModelSerializer(ModelSerializer):
     def validate_following(self, value):
         user = self.context['request'].user
         if user == value:
-            raise ValidationError("Siz o'zingizga o'zingiz obuna bo'lolmaysiz")
+            raise ValidationError("Siz ozingizga ozingiz obuna bololmaysiz")
         return value
+

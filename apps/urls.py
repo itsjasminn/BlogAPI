@@ -5,6 +5,10 @@ from apps.views import BlogCreateAPIView, BlogListAPIView, BlogDestroyAPIView, B
     BlogImagesListAPIView, QuestionCreateAPIView, QuestionListAPIView, QuestionDeleteAPIView, QuestionUpdateAPIView, \
     QuestionDetailAPIView, AnswerCreateAPIView, AnswerListAPIView, AnswerDeleteAPIView, AnswerUpdateAPIView, \
     AnswerDetailAPIView
+from apps.views import BlogCreateAPIView, BlogListAPIView, BlogDestroyAPIView, BlogUpdateAPIView, BlogDetailAPIView
+from apps.views import BlogImagesCreateAPIView
+from apps.views import BlogImagesDetailAPIView, BlogImagesUpdateAPIView, BlogImagesDestroyAPIView
+from apps.views import BlogImagesListAPIView, CommentCreatAPIView, CommentListAPIView, BlogLikeGenericAPIView
 
 # blog
 urlpatterns = [
@@ -40,5 +44,12 @@ urlpatterns += [
     path('answer-delete/<int:pk>', AnswerDeleteAPIView.as_view()),
     path('answer-update/<int:pk>', AnswerUpdateAPIView.as_view()),
     path('answer-detail/<int:pk>', AnswerDetailAPIView.as_view()),
+    path('block/like', BlogLikeGenericAPIView.as_view()),
 
+]
+
+# comment
+urlpatterns += [
+    path('commnet', CommentCreatAPIView.as_view()),
+    path('commnet/list/<int:pk>', CommentListAPIView.as_view())
 ]
