@@ -2,7 +2,7 @@ from ckeditor.fields import RichTextField
 from django.contrib.auth.models import AbstractUser, UserManager
 from django.db.models import ImageField, DateTimeField, TextChoices, BooleanField, SET_NULL
 from django.db.models import Model, ForeignKey, CASCADE, ManyToManyField
-from django.db.models.fields import CharField, EmailField, IntegerField
+from django.db.models.fields import CharField, EmailField
 
 
 class User(AbstractUser):
@@ -10,7 +10,6 @@ class User(AbstractUser):
         ADMIN = "admin", "Admin"
         USER = 'user', 'User'
 
-    reputation = IntegerField(default=0)
     avatar = ImageField(upload_to='avatars/%Y/%m/%d/', null=True, blank=True)
     email = EmailField(max_length=255, unique=True)
     bio = RichTextField(null=True, blank=True)

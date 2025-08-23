@@ -1,7 +1,7 @@
-from rest_framework.exceptions import ValidationError
 from rest_framework.serializers import ModelSerializer
 
-from apps.models import Blog, BlogImages
+from apps.models import Blog, BlogImages, Question
+from authentication.serializers import UserModelSerializer
 
 
 class BlogModelSerializer(ModelSerializer):
@@ -16,7 +16,12 @@ class BlogImagesModelSerializer(ModelSerializer):
         model = BlogImages
         fields = ('blog', 'image')
 
-    def validate_image(self, value):
-        if value and not value.name.lower().endswith(('.jpg', 'jpeg', 'png')):
-            raise ValidationError('Invalid format!')
-        return value
+
+class QuestionModelSerializer(ModelSerializer):
+    author = UserModelSerializer(many=False, read_only=True)
+
+    class Meta:
+        model = Question
+        fields = ('title', 'content', 'author')
+        read_only_fields = ('created_at', 'author')
+

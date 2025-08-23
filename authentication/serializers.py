@@ -1,8 +1,8 @@
-import json
 import re
 
 from django.contrib.auth.hashers import make_password
 from django.core.validators import validate_email, RegexValidator
+from orjson import orjson
 from rest_framework.exceptions import ValidationError
 from rest_framework.fields import CharField
 from rest_framework.serializers import ModelSerializer, Serializer
@@ -41,10 +41,10 @@ class UserModelSerializer(ModelSerializer):
         try:
             validate_email(value)
         except ValidationError:
-            raise ValidationError('Elektron pochta manzili yaroqsiz')
+            raise ValidationError('Elektron pochta manzili yaroqsiz.')
 
         if User.objects.filter(email=value).exists():
-            raise ValidationError('Bu elektron pochta manzili ro‘yxatdan o‘tgan')
+            raise ValidationError('Bu elektron pochta manzili ro‘yxatdan o‘tgan.')
 
         return value
 
@@ -68,7 +68,7 @@ class VerifyCodeSerializer(Serializer):
         data = redis.get(value)
         if not data:
             raise ValidationError("Code notog'ri")
-        user_data = json.loads(data)
+        user_data = orjson.loads(data)
         self.context['user_data'] = user_data
         return value
 
