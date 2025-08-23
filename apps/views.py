@@ -47,6 +47,17 @@ class BlogDetailAPIView(RetrieveAPIView):
     queryset = Blog.objects.all()
     lookup_field = 'pk'
 
+    def retrieve(self, request, *args, **kwargs):
+        instance = self.get_object()
+
+        if request.user.is_authenticated:
+            BlogView.objects.get_or_create(blog=instance, user=request.user)
+
+        serializer = self.get_serializer(instance)
+        data = serializer.data
+        data['views'] = instance.blog_views.count()
+        return Response(data)
+
 
 @extend_schema(tags=['blog-images'])
 class BlogImagesCreateAPIView(CreateAPIView):
@@ -116,6 +127,17 @@ class QuestionDetailAPIView(RetrieveAPIView):
     queryset = Question.objects.all()
     lookup_field = 'pk'
 
+    def retrieve(self, request, *args, **kwargs):
+        instance = self.get_object()
+
+        if request.user.is_authenticated:
+            QuestionView.objects.get_or_create(question=instance, user=request.user)
+
+        serializer = self.get_serializer(instance)
+        data = serializer.data
+        data['views'] = instance.question_views.count()
+        return Response(data)
+
 
 @extend_schema(tags=['answers'])
 class AnswerCreateAPIView(CreateAPIView):
@@ -151,6 +173,17 @@ class AnswerDetailAPIView(RetrieveAPIView):
     serializer_class = AnswerModelSerializer
     queryset = Answer.objects.all()
     lookup_field = 'pk'
+
+    def retrieve(self, request, *args, **kwargs):
+        instance = self.get_object()
+
+        if request.user.is_authenticated:
+            AnswerView.objects.get_or_create(answer=instance, user=request.user)
+
+        serializer = self.get_serializer(instance)
+        data = serializer.data
+        data['views'] = instance.answer_views.count()
+        return Response(data)
 
 
 # ==================================================================Comment
@@ -351,3 +384,9 @@ class AnswerVoteRemoveAPIView(GenericAPIView):
             answer.downvotes.remove(request.user)
             type = 'downvote'
         return Response({'message': f'{type} olindi'}, status=HTTPStatus.OK)
+
+
+@extend_schema(tags=['statistics'])
+class StatisticsAPIView(ListAPIView):
+
+
