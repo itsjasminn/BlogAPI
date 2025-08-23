@@ -132,6 +132,12 @@ class FollowingModelSerializer(ModelSerializer):
             raise ValidationError("Siz ozingizga ozingiz obuna bololmaysiz")
         return value
 
-''''
 
-'''
+class TopicModelSerializer(ModelSerializer):
+    class Meta:
+        model = Topic
+        fields = ('name', 'description')
+
+
+class FollowTopicSerializer(Serializer):
+    topic_id = IntegerField(required=True)

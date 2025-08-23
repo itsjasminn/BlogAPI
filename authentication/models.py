@@ -8,7 +8,6 @@ from django.db.models.fields import CharField, EmailField, IntegerField
 class User(AbstractUser):
     class RoleType(TextChoices):
         ADMIN = "admin", "Admin"
-        MODERATOR = "moderator", "Moderator"
         USER = 'user', 'User'
 
     reputation = IntegerField(default=0)

@@ -68,7 +68,7 @@ class UserRetrieveAPIView(RetrieveAPIView):
 @extend_schema(tags=['auth'])
 class UserDeleteAPIView(DestroyAPIView):
     queryset = User.objects.all()
-    permission_classes = [IsAuthenticated]
+    permission_classes = [IsModerator]
     serializer_class = UserModelSerializer
 
 
