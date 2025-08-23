@@ -138,3 +138,10 @@ class AnswerUpdateAPIView(UpdateAPIView):
     serializer_class = AnswerModelSerializer
     queryset = Answer.objects.all()
     lookup_field = 'pk'
+
+
+@extend_schema(tags=['answers'])
+class AnswerDetailAPIView(RetrieveAPIView):
+    serializer_class = AnswerModelSerializer
+    queryset = Answer.objects.all()
+    lookup_field = 'pk'

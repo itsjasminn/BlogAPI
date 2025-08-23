@@ -3,7 +3,8 @@ from django.urls import path
 from apps.views import BlogCreateAPIView, BlogListAPIView, BlogDestroyAPIView, BlogUpdateAPIView, BlogDetailAPIView, \
     BlogImagesDetailAPIView, BlogImagesUpdateAPIView, BlogImagesDestroyAPIView, BlogImagesCreateAPIView, \
     BlogImagesListAPIView, QuestionCreateAPIView, QuestionListAPIView, QuestionDeleteAPIView, QuestionUpdateAPIView, \
-    QuestionDetailAPIView, AnswerCreateAPIView, AnswerListAPIView, AnswerDeleteAPIView, AnswerUpdateAPIView
+    QuestionDetailAPIView, AnswerCreateAPIView, AnswerListAPIView, AnswerDeleteAPIView, AnswerUpdateAPIView, \
+    AnswerDetailAPIView
 
 # blog
 urlpatterns = [
@@ -33,13 +34,11 @@ urlpatterns += [
 ]
 
 # answers
-
 urlpatterns += [
     path('answer-create', AnswerCreateAPIView.as_view()),
     path('answers', AnswerListAPIView.as_view()),
     path('answer-delete/<int:pk>', AnswerDeleteAPIView.as_view()),
     path('answer-update/<int:pk>', AnswerUpdateAPIView.as_view()),
+    path('answer-detail/<int:pk>', AnswerDetailAPIView.as_view()),
 
 ]
-
-

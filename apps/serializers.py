@@ -26,6 +26,8 @@ class QuestionModelSerializer(ModelSerializer):
         read_only_fields = ('created_at', 'author')
 
 
+
+
 class AnswerModelSerializer(ModelSerializer):
     author = UserModelSerializer(many=False, read_only=True)
     question = QuestionModelSerializer(many=False, read_only=True)
