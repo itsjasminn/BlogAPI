@@ -3,6 +3,7 @@ import random
 from http import HTTPStatus
 
 from drf_spectacular.utils import extend_schema, OpenApiParameter
+from rest_framework.exceptions import NotFound
 from rest_framework.generics import CreateAPIView, UpdateAPIView, ListAPIView, RetrieveAPIView, DestroyAPIView
 from rest_framework.generics import GenericAPIView
 from rest_framework.permissions import AllowAny
@@ -123,7 +124,6 @@ class FollowDestroyAPIView(DestroyAPIView):
         # user.id bilan tekshirish
         obj = Follow.objects.filter(following=follow_id).first()
         if not obj:
-            from rest_framework.exceptions import NotFound
             raise NotFound("Follow topilmadi yoki sizga tegishli emas")
         return obj
 
