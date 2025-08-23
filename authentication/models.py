@@ -6,21 +6,6 @@ from django.db.models.fields import CharField, EmailField, IntegerField
 
 
 class User(AbstractUser):
-    class AddressType(TextChoices):
-        TASHKENT = "Tashkent", "Toshkent, O'zbekiston"
-        SAMARKAND = "Samarkand", "Samarqand, O'zbekiston"
-        SURKHANDARYA = "Surkhandarya", "Surxondaryo, O'zbekiston"
-        KASHKADARYA = "Kashkadarya", "Qashqadaryo, O'zbekiston"
-        NAVOI = "Navoi", "Navoiy, O'zbekiston"
-        BUKHARA = "Bukhara", "Buxoro, O'zbekiston"
-        NAMANGAN = "Namangan", "Namangan, O'zbekiston"
-        KHOREZM = "Khorezm", "Xorazm, O'zbekiston"
-        FERGANA = "Fergana", "Farg'ona, O'zbekiston"
-        JIZZAKH = "Jizzakh", "Jizzax, O'zbekiston"
-        ANDIJAN = "Andijan", "Andijon, O'zbekiston"
-        SYRDARYA = "Syrdarya", "Sirdaryo, O'zbekiston"
-        KARAKALPAKSTAN = "Karakalpakstan", "Qoraqalpog'iston Respublikasi"
-
     class RoleType(TextChoices):
         ADMIN = "admin", "Admin"
         MODERATOR = "moderator", "Moderator"
@@ -30,10 +15,9 @@ class User(AbstractUser):
     avatar = ImageField(upload_to='avatars/%Y/%m/%d/', null=True, blank=True)
     email = EmailField(max_length=255, unique=True)
     bio = RichTextField(null=True, blank=True)
-    location = CharField(max_length=50, choices=AddressType.choices, null=True, blank=True)
-    two_factor = BooleanField(default=False)
+    location = CharField(max_length=50, null=True, blank=True)
     role = CharField(max_length=25, choices=RoleType.choices, default=RoleType.USER)
-    topic_followed = ManyToManyField('authentication.Topic', related_name='topic_followed')
+    city = ForeignKey('authentication.City', related_name='users', on_delete=CASCADE)
 
     USERNAME_FIELD = 'email'
     REQUIRED_FIELDS = ['username']
@@ -48,6 +32,10 @@ class User(AbstractUser):
         return f"{self.first_name} {self.last_name}"
 
 
+class City(Model):
+    name = CharField(max_length=60)
+
+
 class Follow(Model):
     class Meta:
         unique_together = ("follower", "following")
@@ -58,14 +46,6 @@ class Follow(Model):
 
     def __str__(self):
         return f"{self.follower.username} -> {self.following.username}"
-
-
-class Topic(Model):
-    name = CharField(max_length=100, unique=True)
-    description = RichTextField(null=True, blank=True)
-
-    def __str__(self):
-        return self.name
 
 
 class Blog(Model):
