@@ -52,64 +52,12 @@ class Follow(Model):
     class Meta:
         unique_together = ("follower", "following")
 
-    follower = ForeignKey(User, related_name='following_set', on_delete=CASCADE)
-    following = ForeignKey(User, related_name='followers_set', on_delete=CASCADE)
+    follower = ForeignKey('authentication.User', related_name='following_set', on_delete=CASCADE)
+    following = ForeignKey('authentication.User', related_name='followers_set', on_delete=CASCADE)
     created_at = DateTimeField(auto_now_add=True)
 
     def __str__(self):
         return f"{self.follower.username} -> {self.following.username}"
-
-
-class Topic(Model):
-    name = CharField(max_length=100, unique=True)
-    description = RichTextField(null=True, blank=True)
-
-    def __str__(self):
-        return self.name
-
-
-class Blog(Model):
-    author = ForeignKey(User, related_name='blogs', on_delete=CASCADE)
-    title = CharField(max_length=255)
-    content = RichTextField()
-    tags = CharField(max_length=255)
-    likes = ManyToManyField('authentication.User', related_name='blog_likes')
-    created_at = DateTimeField(auto_now_add=True)
-
-    def __str__(self):
-        return self.title
-
-
-class Comment(Model):
-    blog = ForeignKey(Blog, on_delete=CASCADE, related_name="comments")
-    author = ForeignKey(User, on_delete=CASCADE)
-    content = RichTextField()
-    created_at = DateTimeField(auto_now_add=True)
-
-    def __str__(self):
-        return f"Comment by {self.author.username}"
-
-
-class Question(Model):
-    author = ForeignKey(User, on_delete=CASCADE, related_name="questions")
-    title = CharField(max_length=255)
-    content = RichTextField()
-    created_at = DateTimeField(auto_now_add=True)
-
-    def __str__(self):
-        return self.title
-
-
-class Answer(Model):
-    question = ForeignKey(Question, on_delete=CASCADE, related_name="answers")
-    author = ForeignKey(User, on_delete=CASCADE)
-    content = RichTextField()
-    created_at = DateTimeField(auto_now_add=True)
-    upvotes = ManyToManyField(User, related_name="upvoted_answers", blank=True)
-    downvotes = ManyToManyField(User, related_name="downvoted_answers", blank=True)
-
-    def __str__(self):
-        return f"Answer by {self.author.username}"
 
 
 class Notifications(Model):
@@ -119,7 +67,7 @@ class Notifications(Model):
         BLOG_COMMENT = 'blog_comment', 'Blog Comment'
         WARNING = 'warning', 'Moderator Warning'
 
-    recipient = ForeignKey(User, on_delete=CASCADE, related_name="notifications")
+    recipient = ForeignKey('authentication.User', on_delete=CASCADE, related_name="notifications")
     type = CharField(max_length=20, choices=NotificationType.choices, default=NotificationType.NEW_FOLLOWER)
     message = RichTextField()
     created_at = DateTimeField(auto_now_add=True)
@@ -127,13 +75,3 @@ class Notifications(Model):
 
     def __str__(self):
         return f"Notification for {self.recipient.username}"
-
-
-class Badge(Model):
-    name = CharField(max_length=255, unique=True)
-    description = RichTextField(null=True, blank=True)
-    icon = ImageField(upload_to='badges/%Y/%m/%d/', null=True, blank=True)
-    users = ManyToManyField(User, related_name='badges', blank=True)
-
-    def __str__(self):
-        return self.name
