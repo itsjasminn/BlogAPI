@@ -45,6 +45,7 @@ class Question(Model):
     title = CharField(max_length=255)
     content = RichTextField()
     created_at = DateTimeField(auto_now_add=True)
+    votes = ManyToManyField('authentication.User', related_name='question_votes')
     is_edited = BooleanField(default=False)
 
     def __str__(self):
@@ -58,6 +59,7 @@ class QuestionView(Model):
     question = ForeignKey('apps.Question', on_delete=CASCADE, related_name="question_views")
     user = ForeignKey('authentication.User', on_delete=CASCADE, related_name="question_views")
     viewed_at = DateTimeField(auto_now=True)
+
 
 
 class Answer(Model):
@@ -91,3 +93,11 @@ class AnswerComment(Model):
 
     def __str__(self):
         return f"Comment by {self.author.username}"
+
+
+
+class Save(Model):
+    user=ForeignKey('authentication.User', on_delete=CASCADE,related_name='saves')
+    blog=ForeignKey('apps.Blog', on_delete=CASCADE, related_name='saves')
+
+

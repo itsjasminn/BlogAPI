@@ -29,6 +29,24 @@ class LikeSerializer(Serializer):
         return blog
 
 
+class QuestionVotesSerializer(Serializer):
+    question = IntegerField(required=True)
+
+    def validate_question(self, value):
+        question = Question.objects.filter(pk=value).first()
+        self.question_data = question
+        return value
+
+
+class AnswerVotesSerializer(Serializer):
+    answer = IntegerField(required=True)
+
+    def validate_answer(self, value):
+        answer = Answer.objects.filter(pk=value).first()
+        self.answer_data = answer
+        return value
+
+
 class BlogImagesModelSerializer(ModelSerializer):
     class Meta:
         model = BlogImages

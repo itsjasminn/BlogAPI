@@ -1,13 +1,16 @@
 from http import HTTPStatus
 
-from drf_spectacular.utils import extend_schema
+from drf_spectacular.utils import extend_schema, OpenApiParameter
 from rest_framework.generics import CreateAPIView, ListAPIView, DestroyAPIView, UpdateAPIView, RetrieveAPIView, \
     GenericAPIView
 from rest_framework.response import Response
 
 from apps.models import Blog, BlogImages, Comment, Question, Answer, AnswerComment, AnswerView, QuestionView, BlogView
+from apps.models import Answer, AnswerComment
+from apps.models import Blog, BlogImages, Comment, Question
 from apps.serializers import BlogModelSerializer, BlogImagesModelSerializer, CommentModelSerializer, LikeSerializer, \
-    QuestionModelSerializer, AnswerModelSerializer, AnswerCommentModelSerializer
+    QuestionVotesSerializer, AnswerVotesSerializer
+from apps.serializers import QuestionModelSerializer, AnswerModelSerializer, AnswerCommentModelSerializer
 
 
 @extend_schema(tags=['blog'])
@@ -17,18 +20,6 @@ class BlogCreateAPIView(CreateAPIView):
 
     def perform_create(self, serializer):
         serializer.save(author=self.request.user)
-
-
-@extend_schema(tags=['blog'])
-class BlogLikeGenericAPIView(GenericAPIView):
-    serializer_class = LikeSerializer
-
-    def post(self, request):
-        serializer = self.get_serializer(data=request.data)
-        serializer.is_valid(raise_exception=True)
-        blog = serializer.blog_data
-        blog.likes.add(request.user)
-        return Response({'message': 'like bosildi'}, status=HTTPStatus.OK)
 
 
 @extend_schema(tags=['blog'])
@@ -216,6 +207,12 @@ class CommentListAPIView(ListAPIView):
         return query
 
 
+@extend_schema(tags=['block-comment'])
+class CommentDestroyAPIView(DestroyAPIView):
+    queryset = Comment.objects.all()
+    lookup_field = 'pk'
+
+
 @extend_schema(tags=['answer-comment'])
 class AnswerCommentCreateAPIView(CreateAPIView):
     serializer_class = AnswerCommentModelSerializer
@@ -243,6 +240,148 @@ class AnswerCommentUpdateAPIView(UpdateAPIView):
     serializer_class = AnswerCommentModelSerializer
     queryset = AnswerComment.objects.all()
     lookup_field = 'pk'
+
+
+# ==================================================================Like
+@extend_schema(tags=['blog-like'])
+class LikeGenericAPIView(GenericAPIView):
+    serializer_class = LikeSerializer
+
+    def post(self, request):
+        serializer = self.get_serializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        blog = serializer.blog_data
+        blog.likes.add(request.user)
+        return Response({'message': 'like bosildi'}, status=HTTPStatus.OK)
+
+
+@extend_schema(tags=['blog-like'])
+class LikeCountAPIView(GenericAPIView):
+    def get(self, request, pk):
+        blog = Blog.objects.filter(pk=pk).first()
+        quantity = blog.likes.count()
+        return Response({'count': quantity}, status=HTTPStatus.OK)
+
+
+@extend_schema(tags=['blog-like'])
+class LikeRemoveAPIView(GenericAPIView):
+    serializer_class = LikeSerializer
+
+    def post(self, request):
+        serializer = self.get_serializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        blog = serializer.blog_data
+        blog.likes.remove(request.user)
+        return Response({'message': 'like olibtashlandi'}, status=HTTPStatus.NO_CONTENT)
+
+
+# ==================================================================Votes
+
+@extend_schema(tags=['question-vote'])
+class QuestionVoteGenericAPIView(GenericAPIView):
+    serializer_class = QuestionVotesSerializer
+
+    def post(self, request):
+        serializer = self.get_serializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        question = serializer.question_data
+        question.votes.add(request.user)
+        return Response({'message': 'vote bosildi'}, status=HTTPStatus.OK)
+
+
+@extend_schema(tags=['question-vote'])
+class QuestionVoteCountAPIView(GenericAPIView):
+    def get(self, request, pk):
+        question = Question.objects.filter(pk=pk).first()
+        count = question.votes.count()
+        return Response({'count': count}, status=HTTPStatus.OK)
+
+
+@extend_schema(tags=['question-vote'])
+class QuestionVoteRemoveAPIView(GenericAPIView):
+    serializer_class = QuestionVotesSerializer
+
+    def post(self, request):
+        serializer = self.get_serializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        question = serializer.question_data
+        question.votes.remove(request.user)
+        return Response({'message': 'vote olindi'}, status=HTTPStatus.OK)
+
+
+# ==================================================================Upvotes-Downvotes================================
+@extend_schema(tags=['answer-vote'], parameters=[
+    OpenApiParameter(
+        type=str,
+        name='votes',
+        required=False
+    )
+])
+class AnswerVoteGenericAPIView(GenericAPIView):
+    serializer_class = AnswerVotesSerializer
+
+    def post(self, request):
+        serializer = self.get_serializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        answer = serializer.answer_data
+        votes = request.query_params.get('votes')
+        type = None
+        if votes == 'upvote':
+            answer.upvotes.add(request.user)
+            type = 'upvote'
+        if votes == 'downvote':
+            answer.downvotes.add(request.user)
+            type = 'downvote'
+        return Response({'message': f'{type} bosildi'}, status=HTTPStatus.OK)
+
+
+@extend_schema(tags=['question-vote'], parameters=[
+    OpenApiParameter(
+        type=str,
+        name='votes',
+        required=False
+    ),
+])
+class AnswerVoteCountAPIView(GenericAPIView):
+
+    def get(self, request, pk):
+        answer = Answer.objects.filter(pk=pk).first()
+        votes = request.query_params.get('votes')
+        type = None
+        count = 0
+        if votes == 'upvote':
+            count = answer.upvotes.count()
+            type = 'upvote'
+        if votes == 'downvote':
+            count = answer.downvotes.count()
+            type = 'downvote'
+        return Response({'message': f'{type} soni{count}'}, status=HTTPStatus.OK)
+
+
+@extend_schema(tags=['answer-vote'], parameters=[
+    OpenApiParameter(
+        type=str,
+        name='votes',
+        required=False
+    ),
+])
+@extend_schema(tags=['answer-vote'])
+class AnswerVoteRemoveAPIView(GenericAPIView):
+    serializer_class = AnswerVotesSerializer
+
+    def post(self, request):
+        serializer = self.get_serializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        answer = serializer.answer_data
+        votes = request.query_params.get('votes')
+        type = None
+        if votes == 'upvote':
+            answer.upvotes.remove(request.user)
+            type = 'upvote'
+        if votes == 'downvote':
+            answer.downvotes.remove(request.user)
+            type = 'downvote'
+        return Response({'message': f'{type} olindi'}, status=HTTPStatus.OK)
 
 
 @extend_schema(tags=['statistics'])

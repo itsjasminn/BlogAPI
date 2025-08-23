@@ -1,10 +1,13 @@
 from django.urls import path
 
 from apps.views import BlogCreateAPIView, BlogListAPIView, BlogDestroyAPIView, BlogUpdateAPIView, BlogDetailAPIView, \
-    CommentCreateAPIView, AnswerCommentDeleteAPIView, AnswerCommentListAPIView
+    AnswerCommentDeleteAPIView, AnswerCommentListAPIView, LikeRemoveAPIView, QuestionVoteCountAPIView, \
+    QuestionVoteRemoveAPIView, AnswerVoteGenericAPIView, AnswerVoteCountAPIView, AnswerVoteRemoveAPIView, \
+    LikeCountAPIView
 from apps.views import BlogImagesCreateAPIView
 from apps.views import BlogImagesDetailAPIView, BlogImagesUpdateAPIView, BlogImagesDestroyAPIView
-from apps.views import BlogImagesListAPIView, CommentListAPIView, BlogLikeGenericAPIView
+from apps.views import BlogImagesListAPIView, CommentCreateAPIView, CommentListAPIView, LikeGenericAPIView
+from apps.views import CommentDestroyAPIView, QuestionVoteGenericAPIView
 from apps.views import QuestionCreateAPIView, QuestionListAPIView, QuestionDeleteAPIView, QuestionUpdateAPIView, \
     QuestionDetailAPIView, AnswerCreateAPIView, AnswerListAPIView, AnswerDeleteAPIView, AnswerUpdateAPIView, \
     AnswerDetailAPIView, AnswerCommentUpdateAPIView, AnswerCommentCreateAPIView
@@ -43,12 +46,17 @@ urlpatterns += [
     path('answer-delete/<int:pk>', AnswerDeleteAPIView.as_view()),
     path('answer-update/<int:pk>', AnswerUpdateAPIView.as_view()),
     path('answer-detail/<int:pk>', AnswerDetailAPIView.as_view()),
-    path('block/like', BlogLikeGenericAPIView.as_view()),
+    path('block/like', LikeGenericAPIView.as_view()),
+    path('block/like/count/<int:pk>', LikeCountAPIView.as_view()),
+    path('block/like/remove', LikeRemoveAPIView.as_view()),
 
 ]
 
 # comment
 urlpatterns += [
+    path('commnet', CommentCreateAPIView.as_view()),
+    path('commnet/list/<int:pk>', CommentListAPIView.as_view()),
+    path('commnet/delete/<int:pk>', CommentDestroyAPIView.as_view()),
     path('comment', CommentCreateAPIView.as_view()),
     path('comment/list/<int:pk>', CommentListAPIView.as_view())
 ]
@@ -60,4 +68,15 @@ urlpatterns += [
     path('answer-commnet-delete/<int:pk>', AnswerCommentDeleteAPIView.as_view()),
     path('answer-comments', AnswerCommentListAPIView.as_view()),
 
+]
+
+urlpatterns += [
+    path('question/votes', QuestionVoteGenericAPIView.as_view()),
+    path('question/count/votes/<int:pk>/', QuestionVoteCountAPIView.as_view()),
+    path('question/remove/votes', QuestionVoteRemoveAPIView.as_view()),
+]
+urlpatterns += [
+    path('answers/votes', AnswerVoteGenericAPIView.as_view()),
+    path('answers/count/votes/<int:pk>/', AnswerVoteCountAPIView.as_view()),
+    path('answers.remove/votes', AnswerVoteRemoveAPIView.as_view()),
 ]

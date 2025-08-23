@@ -1,8 +1,9 @@
-import json
 import random
 from http import HTTPStatus
 
 from drf_spectacular.utils import extend_schema, OpenApiParameter
+from orjson import orjson
+from rest_framework.exceptions import NotFound
 from rest_framework.generics import CreateAPIView, UpdateAPIView, ListAPIView, RetrieveAPIView, DestroyAPIView
 from rest_framework.generics import GenericAPIView
 from rest_framework.permissions import AllowAny
@@ -26,7 +27,7 @@ class UserGenericAPIView(GenericAPIView):
         user = serializer.validated_data
         code = str(random.randrange(10 ** 5, 10 ** 6))
         send_code_email.delay(user, code)
-        redis.set(code, json.dumps(user))
+        redis.set(code, orjson.dumps(user))
         return Response({'message': 'Tastiqlash kodi jonatilid'}, status=HTTPStatus.OK)
 
 
@@ -111,3 +112,22 @@ class FollowsListAPiView(ListAPIView):
         if following:
             query = query.filter(following=self.request.user)
         return query
+
+
+@extend_schema(tags=['follow'])
+class FollowDestroyAPIView(DestroyAPIView):
+    queryset = Follow.objects.all()
+    lookup_field = 'pk'
+
+    def get_object(self):
+        follow_id = self.kwargs.get(self.lookup_field)
+        # user.id bilan tekshirish
+        obj = Follow.objects.filter(following=follow_id).first()
+        if not obj:
+            raise NotFound("Follow topilmadi yoki sizga tegishli emas")
+        return obj
+
+    def delete(self, request, *args, **kwargs):
+        obj = self.get_object()
+        obj.delete()
+        return Response({'message': 'Muvofaqiyatli ochirildi'}, status=HTTPStatus.NO_CONTENT)
