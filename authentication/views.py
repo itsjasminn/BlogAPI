@@ -111,3 +111,23 @@ class FollowsListAPiView(ListAPIView):
         if following:
             query = query.filter(following=self.request.user)
         return query
+
+
+@extend_schema(tags=['follow'])
+class FollowDestroyAPIView(DestroyAPIView):
+    queryset = Follow.objects.all()
+    lookup_field = 'pk'
+
+    def get_object(self):
+        follow_id = self.kwargs.get(self.lookup_field)
+        # user.id bilan tekshirish
+        obj = Follow.objects.filter(following=follow_id).first()
+        if not obj:
+            from rest_framework.exceptions import NotFound
+            raise NotFound("Follow topilmadi yoki sizga tegishli emas")
+        return obj
+
+    def delete(self, request, *args, **kwargs):
+        obj = self.get_object()
+        obj.delete()
+        return Response({'message': 'Muvofaqiyatli ochirildi'}, status=HTTPStatus.NO_CONTENT)
