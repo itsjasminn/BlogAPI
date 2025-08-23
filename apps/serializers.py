@@ -1,17 +1,22 @@
 from rest_framework.exceptions import ValidationError
 from rest_framework.serializers import ModelSerializer
 
-from authentication.models import Follow
+from apps.models import Blog, BlogImages
 
 
-class FollowingModelSerializer(ModelSerializer):
+class BlogModelSerializer(ModelSerializer):
     class Meta:
-        model = Follow
-        fields = ('following', 'follower', 'created_at')
-        read_only_fields = ('created_at', 'follower')
+        model = Blog
+        fields = ('title', 'content', 'tags')
+        read_only_fields = ('created_at', 'author')
 
-    def validate_following(self, value):
-        user = self.context['request'].user
-        if user == value:
-            raise ValidationError("Siz ozingizga ozingiz obuna bololmaysiz")
+
+class BlogImagesModelSerializer(ModelSerializer):
+    class Meta:
+        model = BlogImages
+        fields = ('blog', 'image')
+
+    def validate_image(self, value):
+        if value and not value.name.lower().endswith(('.jpg', 'jpeg', 'png')):
+            raise ValidationError('Invalid format!')
         return value

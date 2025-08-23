@@ -57,6 +57,23 @@ class Badge(Model):
     def __str__(self):
         return self.name
 
+
+class Notifications(Model):
+    class NotificationType(TextChoices):
+        NEW_FOLLOWER = 'new_follower', 'New Follower'
+        ANSWER_UPVOTE = 'answer_upvote', 'Answer Upvote'
+        BLOG_COMMENT = 'blog_comment', 'Blog Comment'
+        WARNING = 'warning', 'Moderator Warning'
+
+    recipient = ForeignKey('authentication.User', on_delete=CASCADE, related_name="notifications")
+    type = CharField(max_length=20, choices=NotificationType.choices, default=NotificationType.NEW_FOLLOWER)
+    message = RichTextField()
+    created_at = DateTimeField(auto_now_add=True)
+    is_read = BooleanField(default=False)
+
+    def __str__(self):
+        return f"Notification for {self.recipient.username}"
+
 class Notifications(Model):
     class NotificationType(TextChoices):
         NEW_FOLLOWER = 'new_follower', 'New Follower'
