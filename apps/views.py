@@ -1,8 +1,12 @@
+from http import HTTPStatus
+
 from drf_spectacular.utils import extend_schema, OpenApiParameter
-from rest_framework.generics import CreateAPIView, ListAPIView, DestroyAPIView, UpdateAPIView, RetrieveAPIView
+from rest_framework.generics import CreateAPIView, ListAPIView, DestroyAPIView, UpdateAPIView, RetrieveAPIView, \
+    GenericAPIView
+from rest_framework.response import Response
 
 from apps.models import Blog, BlogImages, Comment
-from apps.serializers import BlogModelSerializer, BlogImagesModelSerializer, CommentModelSerializer
+from apps.serializers import BlogModelSerializer, BlogImagesModelSerializer, CommentModelSerializer, LikeSerializer
 
 
 @extend_schema(tags=['blog'])
@@ -13,6 +17,18 @@ class BlogCreateAPIView(CreateAPIView):
     def perform_create(self, serializer):
         serializer.save(author=self.request.user)
 
+
+
+@extend_schema(tags=['blog'])
+class BlogLikeGenericAPIView(GenericAPIView):
+    serializer_class = LikeSerializer
+
+    def post(self, request):
+        serializer = self.get_serializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        blog=serializer.blog_data
+        blog.likes.add(request.user)
+        return Response({'message':'like bosildi'},status=HTTPStatus.OK)
 
 @extend_schema(tags=['blog'])
 class BlogListAPIView(ListAPIView):

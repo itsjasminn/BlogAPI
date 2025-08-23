@@ -1,5 +1,6 @@
 from rest_framework.exceptions import ValidationError
-from rest_framework.serializers import ModelSerializer
+from rest_framework.fields import IntegerField
+from rest_framework.serializers import ModelSerializer, Serializer
 
 from apps.models import Blog, BlogImages, Comment
 
@@ -9,6 +10,16 @@ class BlogModelSerializer(ModelSerializer):
         model = Blog
         fields = ('id', 'title', 'content', 'tags')
         read_only_fields = ('id', 'created_at', 'author')
+
+
+class LikeSerializer(Serializer):
+    blog=IntegerField(required=True)
+
+
+    def validate_blog(self, value):
+        blog=Blog.objects.filter(pk=value).first()
+        self.blog_data=blog
+        return blog
 
 
 class BlogImagesModelSerializer(ModelSerializer):
