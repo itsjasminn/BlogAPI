@@ -1,7 +1,12 @@
 from datetime import timedelta
+from os import getenv
 from os.path import join
 from pathlib import Path
+from core.config import EmailConfig
+from dotenv import load_dotenv
+from redis import Redis
 
+load_dotenv()
 BASE_DIR = Path(__file__).resolve().parent.parent
 
 SECRET_KEY = 'django-insecure-9r_skd*@gvn(ja&e0uprsc-yguhm*mxvf9h-u7v-2of+gdg7ig'
@@ -148,3 +153,25 @@ CKEDITOR_CONFIGS = {
 
 # settings.py
 DATA_UPLOAD_MAX_NUMBER_FIELDS = 2000  # yoki sizga kerakli limit
+
+redis = Redis.from_url(getenv('REDIS_URL'), decode_responses=True)
+
+# =============================================send email==================================
+
+EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+EMAIL_HOST = 'smtp.gmail.com'
+EMAIL_PORT = 587
+EMAIL_USE_TLS = True
+EMAIL_HOST_USER = EmailConfig.EMAIL_USER
+EMAIL_HOST_PASSWORD = EmailConfig.EMAIL_PASSWORD
+
+# =============================================celery==================================
+CELERY_BROKER_URL = getenv('REDIS_URL')
+
+# Natijalarni Redisda saqlashni xohlasangiz:
+CELERY_RESULT_BACKEND = getenv('REDIS_URL')
+
+CELERY_ACCEPT_CONTENT = ['json']
+CELERY_TASK_SERIALIZER = 'json'
+
+CELERY_TIMEZONE = 'Asia/Tashkent'

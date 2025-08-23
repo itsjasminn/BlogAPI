@@ -1,17 +1,20 @@
+import json
 import re
 
+from django.contrib.auth.hashers import make_password
 from django.core.validators import validate_email, RegexValidator
 from rest_framework.exceptions import ValidationError
-from rest_framework.fields import CharField, EmailField
+from rest_framework.fields import CharField
 from rest_framework.serializers import ModelSerializer, Serializer
 
 from authentication.models import User, Follow
+from root.settings import redis
 
 
 class UserModelSerializer(ModelSerializer):
     class Meta:
         model = User
-        fields = ('first_name', 'last_name', 'email', 'username', 'password', 'avatar', 'bio', 'location',)
+        fields = ('id', 'first_name', 'last_name', 'email', 'username', 'password')
         read_only_fields = ('id', 'date_joined', 'last_login')
 
     username_validator = RegexValidator(
@@ -55,34 +58,25 @@ class UserModelSerializer(ModelSerializer):
         if not re.search(r'[A-Za-z]', value):
             raise ValidationError('Parolda kamida bitta harf bo‘lishi lozim.')
 
-        return value
-
-    def validate_avatar(self, value):
-        if value and not value.name.lower().endswith(('.jpg', 'jpeg', 'png')):
-            raise ValidationError('Avatar must be an image.')
-        return value
-
-    def create(self, validated_data):
-        password = validated_data.pop('password')
-        user = User(**validated_data)
-        user.set_password(password)
-        user.save()
-        return user
-
-
-class SendVerificationSerializer(Serializer):
-    email = EmailField()
+        return make_password(value)
 
 
 class VerifyCodeSerializer(Serializer):
-    email = EmailField()
     code = CharField(max_length=6)
+
+    def validate_code(self, value):
+        data = redis.get(value)
+        if not data:
+            raise ValidationError("Code notog'ri")
+        user_data = json.loads(data)
+        self.context['user_data'] = user_data
+        return value
 
 
 class UserUpdateSerializer(UserModelSerializer):
     class Meta:
         model = User
-        fields = ('first_name', 'last_name', 'avatar', 'username', 'bio', 'location')
+        fields = ('first_name', 'last_name', 'avatar', 'username', 'bio', 'city')
 
     def update(self, instance, validated_data):
         for attr, value in validated_data.items():
