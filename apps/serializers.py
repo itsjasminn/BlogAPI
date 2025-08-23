@@ -1,7 +1,7 @@
 from rest_framework.fields import IntegerField
 from rest_framework.serializers import ModelSerializer, Serializer
 
-from apps.models import Blog, BlogImages, Comment
+from apps.models import Blog, BlogImages, Comment, AnswerComment
 from apps.models import Question, Answer
 from authentication.serializers import UserModelSerializer
 
@@ -70,3 +70,21 @@ class CommentModelSerializer(ModelSerializer):
         model = Comment
         fields = ('id', 'author', 'content', 'created_at', 'blog')
         read_only_fields = ('id', 'created_at', 'author')
+
+
+class AnswerCommentModelSerializer(ModelSerializer):
+    author = UserModelSerializer(many=False, read_only=True)
+
+    class Meta:
+        model = AnswerComment
+        fields = ('content', 'author', 'answer')
+        read_only_fields = ('created_at',)
+
+    def update(self, instance, validated_data):
+        old_content = instance.content
+        new_content = validated_data.get('content', old_content)
+
+        if new_content != old_content:
+            validated_data['is_edited'] = True
+
+        return super().update(instance, validated_data)

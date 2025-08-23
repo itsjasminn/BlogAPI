@@ -53,3 +53,14 @@ class Answer(Model):
 
     def __str__(self):
         return f"Answer by {self.author.username}"
+
+
+class AnswerComment(Model):
+    author = ForeignKey('authentication.User', on_delete=CASCADE, related_name="comments")
+    content = RichTextField()
+    answer = ForeignKey('apps.Answer', on_delete=CASCADE, related_name="comments")
+    created_at = DateTimeField(auto_now_add=True)
+    is_edited = BooleanField(default=False)
+
+    def __str__(self):
+        return f"Comment by {self.author.username}"

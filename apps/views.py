@@ -5,11 +5,9 @@ from rest_framework.generics import CreateAPIView, ListAPIView, DestroyAPIView, 
     GenericAPIView
 from rest_framework.response import Response
 
-from apps.models import Blog, BlogImages, Comment
-from apps.models import Question, Answer
-from apps.serializers import BlogModelSerializer, BlogImagesModelSerializer, CommentModelSerializer, LikeSerializer
-from apps.serializers import QuestionModelSerializer, \
-    AnswerModelSerializer
+from apps.models import Blog, BlogImages, Comment, Question, Answer, AnswerComment
+from apps.serializers import BlogModelSerializer, BlogImagesModelSerializer, CommentModelSerializer, LikeSerializer, \
+    QuestionModelSerializer, AnswerModelSerializer, AnswerCommentModelSerializer
 
 
 @extend_schema(tags=['blog'])
@@ -165,11 +163,8 @@ class AnswerDetailAPIView(RetrieveAPIView):
     lookup_field = 'pk'
 
 
-# ==================================================================
-
-
 @extend_schema(tags=['block-comment'])
-class CommentCreatAPIView(CreateAPIView):
+class CommentCreateAPIView(CreateAPIView):
     serializer_class = CommentModelSerializer
 
     def perform_create(self, serializer):
@@ -186,3 +181,32 @@ class CommentListAPIView(ListAPIView):
         pk = self.kwargs.get('pk')
         query = query.filter(blog_id=pk).all()
         return query
+
+
+@extend_schema(tags=['answer-comment'])
+class AnswerCommentCreateAPIView(CreateAPIView):
+    serializer_class = AnswerCommentModelSerializer
+    queryset = AnswerComment.objects.all()
+
+    def perform_create(self, serializer):
+        serializer.save(author=self.request.user)
+
+
+@extend_schema(tags=['answer-comment'])
+class AnswerCommentListAPIView(ListAPIView):
+    serializer_class = AnswerCommentModelSerializer
+    queryset = AnswerComment.objects.all()
+
+
+@extend_schema(tags=['answer-comment'])
+class AnswerCommentDeleteAPIView(DestroyAPIView):
+    serializer_class = AnswerCommentModelSerializer
+    queryset = AnswerComment.objects.all()
+    lookup_field = 'pk'
+
+
+@extend_schema(tags=['answer-comment'])
+class AnswerCommentUpdateAPIView(UpdateAPIView):
+    serializer_class = AnswerCommentModelSerializer
+    queryset = AnswerComment.objects.all()
+    lookup_field = 'pk'

@@ -1,14 +1,13 @@
 from django.urls import path
 
 from apps.views import BlogCreateAPIView, BlogListAPIView, BlogDestroyAPIView, BlogUpdateAPIView, BlogDetailAPIView, \
-    BlogImagesDetailAPIView, BlogImagesUpdateAPIView, BlogImagesDestroyAPIView, BlogImagesCreateAPIView, \
-    BlogImagesListAPIView, QuestionCreateAPIView, QuestionListAPIView, QuestionDeleteAPIView, QuestionUpdateAPIView, \
-    QuestionDetailAPIView, AnswerCreateAPIView, AnswerListAPIView, AnswerDeleteAPIView, AnswerUpdateAPIView, \
-    AnswerDetailAPIView
-from apps.views import BlogCreateAPIView, BlogListAPIView, BlogDestroyAPIView, BlogUpdateAPIView, BlogDetailAPIView
+    CommentCreateAPIView, AnswerCommentDeleteAPIView, AnswerCommentListAPIView
 from apps.views import BlogImagesCreateAPIView
 from apps.views import BlogImagesDetailAPIView, BlogImagesUpdateAPIView, BlogImagesDestroyAPIView
-from apps.views import BlogImagesListAPIView, CommentCreatAPIView, CommentListAPIView, BlogLikeGenericAPIView
+from apps.views import BlogImagesListAPIView, CommentListAPIView, BlogLikeGenericAPIView
+from apps.views import QuestionCreateAPIView, QuestionListAPIView, QuestionDeleteAPIView, QuestionUpdateAPIView, \
+    QuestionDetailAPIView, AnswerCreateAPIView, AnswerListAPIView, AnswerDeleteAPIView, AnswerUpdateAPIView, \
+    AnswerDetailAPIView, AnswerCommentUpdateAPIView, AnswerCommentCreateAPIView
 
 # blog
 urlpatterns = [
@@ -50,6 +49,15 @@ urlpatterns += [
 
 # comment
 urlpatterns += [
-    path('commnet', CommentCreatAPIView.as_view()),
-    path('commnet/list/<int:pk>', CommentListAPIView.as_view())
+    path('comment', CommentCreateAPIView.as_view()),
+    path('comment/list/<int:pk>', CommentListAPIView.as_view())
+]
+
+# answer's comment
+urlpatterns += [
+    path('answer-comment-create', AnswerCommentCreateAPIView.as_view()),
+    path('answer-commnet-update/<int:pk>', AnswerCommentUpdateAPIView.as_view()),
+    path('answer-commnet-delete/<int:pk>', AnswerCommentDeleteAPIView.as_view()),
+    path('answer-comments', AnswerCommentListAPIView.as_view()),
+
 ]
