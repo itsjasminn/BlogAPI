@@ -16,7 +16,7 @@ from root.settings import redis
 
 
 @extend_schema(tags=['auth'])
-class UserCreateAPIView(GenericAPIView):
+class UserGenericAPIView(GenericAPIView):
     serializer_class = UserModelSerializer
     permission_classes = [AllowAny]
 
@@ -30,7 +30,7 @@ class UserCreateAPIView(GenericAPIView):
         return Response({'message': 'Tastiqlash kodi jonatilid'}, status=HTTPStatus.OK)
 
 
-class VerifyCodeAPIView(GenericAPIView):
+class VerifyCodeGenericAPIView(GenericAPIView):
     serializer_class = VerifyCodeSerializer
     permission_classes = [AllowAny]
 
