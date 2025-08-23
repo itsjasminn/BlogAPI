@@ -5,8 +5,9 @@ from rest_framework.generics import CreateAPIView, ListAPIView, DestroyAPIView, 
     GenericAPIView
 from rest_framework.response import Response
 
-from apps.models import Blog, BlogImages, Comment
-from apps.serializers import BlogModelSerializer, BlogImagesModelSerializer, CommentModelSerializer, LikeSerializer
+from apps.models import Blog, BlogImages, Comment, Question
+from apps.serializers import BlogModelSerializer, BlogImagesModelSerializer, CommentModelSerializer, LikeSerializer, \
+    VotesSerializer
 
 
 @extend_schema(tags=['blog'])
@@ -17,18 +18,6 @@ class BlogCreateAPIView(CreateAPIView):
     def perform_create(self, serializer):
         serializer.save(author=self.request.user)
 
-
-
-@extend_schema(tags=['blog'])
-class BlogLikeGenericAPIView(GenericAPIView):
-    serializer_class = LikeSerializer
-
-    def post(self, request):
-        serializer = self.get_serializer(data=request.data)
-        serializer.is_valid(raise_exception=True)
-        blog=serializer.blog_data
-        blog.likes.add(request.user)
-        return Response({'message':'like bosildi'},status=HTTPStatus.OK)
 
 @extend_schema(tags=['blog'])
 class BlogListAPIView(ListAPIView):
@@ -90,7 +79,7 @@ class BlogImagesListAPIView(ListAPIView):
     queryset = BlogImages.objects.all()
 
 
-# ==================================================================
+# ==================================================================Comment
 
 
 @extend_schema(tags=['block-comment'])
@@ -111,3 +100,58 @@ class CommentListAPIView(ListAPIView):
         pk = self.kwargs.get('pk')
         query = query.filter(blog_id=pk).all()
         return query
+
+
+@extend_schema(tags=['block-comment'])
+class CommentDestroyAPIView(DestroyAPIView):
+    queryset = Comment.objects.all()
+    lookup_field = 'pk'
+
+
+# ==================================================================Like
+@extend_schema(tags=['blog-like'])
+class LikeGenericAPIView(GenericAPIView):
+    serializer_class = LikeSerializer
+
+    def post(self, request):
+        serializer = self.get_serializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        blog = serializer.blog_data
+        blog.likes.add(request.user)
+        return Response({'message': 'like bosildi'}, status=HTTPStatus.OK)
+
+
+@extend_schema(tags=['blog-like'])
+class LikeCountDestroyAPIView(GenericAPIView):
+    serializer_class = LikeSerializer
+
+    def post(self, request):
+        serializer = self.get_serializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        blog = serializer.blog_data
+        quantity = blog.likes.count()
+        return Response({'count': quantity}, status=HTTPStatus.OK)
+
+
+@extend_schema(tags=['blog-like'])
+class LikeRemoveAPIView(GenericAPIView):
+    serializer_class = LikeSerializer
+
+    def post(self, request):
+        serializer = self.get_serializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        blog = serializer.blog_data
+        blog.likes.add(request.user)
+        return Response({'message': 'like olibtashlandi'}, status=HTTPStatus.NO_CONTENT)
+
+
+# ==================================================================Votes
+class QuestionVoteGenericAPIView(GenericAPIView):
+    serializer_class = VotesSerializer
+
+    def post(self, request):
+        serializer = self.get_serializer(data=request.data)
+        question_id = serializer.data
+        question = Question.objects.filter(pk=question_id).first()
+        question.votes.add(request.user)
+        return Response({'message': 'question voted'}, status=HTTPStatus.OK)

@@ -1,8 +1,8 @@
-import json
 import random
 from http import HTTPStatus
 
 from drf_spectacular.utils import extend_schema, OpenApiParameter
+from orjson import orjson
 from rest_framework.exceptions import NotFound
 from rest_framework.generics import CreateAPIView, UpdateAPIView, ListAPIView, RetrieveAPIView, DestroyAPIView
 from rest_framework.generics import GenericAPIView
@@ -27,7 +27,7 @@ class UserGenericAPIView(GenericAPIView):
         user = serializer.validated_data
         code = str(random.randrange(10 ** 5, 10 ** 6))
         send_code_email.delay(user, code)
-        redis.set(code, json.dumps(user))
+        redis.set(code, orjson.dumps(user))
         return Response({'message': 'Tastiqlash kodi jonatilid'}, status=HTTPStatus.OK)
 
 

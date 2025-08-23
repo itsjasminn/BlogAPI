@@ -22,6 +22,11 @@ class LikeSerializer(Serializer):
         return blog
 
 
+
+class VotesSerializer(Serializer):
+    pk=IntegerField(required=True)
+
+
 class BlogImagesModelSerializer(ModelSerializer):
     class Meta:
         model = BlogImages

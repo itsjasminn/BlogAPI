@@ -3,6 +3,7 @@ import re
 
 from django.contrib.auth.hashers import make_password
 from django.core.validators import validate_email, RegexValidator
+from orjson import orjson
 from rest_framework.exceptions import ValidationError
 from rest_framework.fields import CharField
 from rest_framework.serializers import ModelSerializer, Serializer
@@ -68,7 +69,7 @@ class VerifyCodeSerializer(Serializer):
         data = redis.get(value)
         if not data:
             raise ValidationError("Code notog'ri")
-        user_data = json.loads(data)
+        user_data = orjson.loads(data)
         self.context['user_data'] = user_data
         return value
 

@@ -31,6 +31,7 @@ class Question(Model):
     title = CharField(max_length=255)
     content = RichTextField()
     created_at = DateTimeField(auto_now_add=True)
+    votes = ManyToManyField('authentication.User', related_name='question_votes')
 
     def __str__(self):
         return self.title
@@ -39,6 +40,7 @@ class Question(Model):
 class BlogImages(Model):
     blog = ForeignKey('apps.Blog', related_name='images', on_delete=CASCADE)
     image = ImageField()
+
 
 class Answer(Model):
     question = ForeignKey(Question, on_delete=CASCADE, related_name="answers")
