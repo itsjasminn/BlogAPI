@@ -22,17 +22,32 @@ class QuestionModelSerializer(ModelSerializer):
 
     class Meta:
         model = Question
-        fields = ('title', 'content', 'author')
-        read_only_fields = ('created_at', 'author')
+        fields = ('title', 'content', 'author', 'is_edited')
+        read_only_fields = ('created_at', 'author', 'is_edited')
 
+    def update(self, instance, validated_data):
+        old_content = instance.content
+        new_content = validated_data.get('content', old_content)
 
+        if new_content != old_content:
+            validated_data['is_edited'] = True
+
+        return super().update(instance, validated_data)
 
 
 class AnswerModelSerializer(ModelSerializer):
     author = UserModelSerializer(many=False, read_only=True)
-    question = QuestionModelSerializer(many=False, read_only=True)
 
     class Meta:
         model = Answer
-        fields = ('content', 'author', 'question')
-        read_only_fields = ('created_at', 'author')
+        fields = ('content', 'author', 'question', 'is_edited')
+        read_only_fields = ('created_at', 'author', 'is_edited',)
+
+    def update(self, instance, validated_data):
+        old_content = instance.content
+        new_content = validated_data.get('content', old_content)
+
+        if new_content != old_content:
+            validated_data['is_edited'] = True
+
+        return super().update(instance, validated_data)

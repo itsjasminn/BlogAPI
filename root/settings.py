@@ -169,7 +169,6 @@ EMAIL_HOST_PASSWORD = EmailConfig.EMAIL_PASSWORD
 # =============================================celery==================================
 CELERY_BROKER_URL = getenv('REDIS_URL')
 
-# Natijalarni Redisda saqlashni xohlasangiz:
 CELERY_RESULT_BACKEND = getenv('REDIS_URL')
 
 CELERY_ACCEPT_CONTENT = ['json']
