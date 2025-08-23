@@ -3,10 +3,9 @@ import re
 from django.core.validators import validate_email, RegexValidator
 from rest_framework.exceptions import ValidationError
 from rest_framework.fields import CharField, EmailField
-from rest_framework.fields import IntegerField
 from rest_framework.serializers import ModelSerializer, Serializer
 
-from authentication.models import User, Follow, Topic
+from authentication.models import User
 
 
 class UserModelSerializer(ModelSerializer):
@@ -125,26 +124,3 @@ class ChangePasswordSerializer(Serializer):
         user.set_password(self.validated_data['new_password'])
         user.save()
         return user
-
-
-class FollowingModelSerializer(ModelSerializer):
-    class Meta:
-        model = Follow
-        fields = ('following', 'follower', 'created_at')
-        read_only_fields = ('created_at', 'follower')
-
-    def validate_following(self, value):
-        user = self.context['request'].user
-        if user == value:
-            raise ValidationError("Siz ozingizga ozingiz obuna bololmaysiz")
-        return value
-
-
-class TopicModelSerializer(ModelSerializer):
-    class Meta:
-        model = Topic
-        fields = ('name', 'description')
-
-
-class FollowTopicSerializer(Serializer):
-    topic_id = IntegerField(required=True)
