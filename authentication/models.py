@@ -1,6 +1,6 @@
 from ckeditor.fields import RichTextField
 from django.contrib.auth.models import AbstractUser, UserManager
-from django.db.models import ImageField, DateTimeField, TextChoices, BooleanField
+from django.db.models import ImageField, DateTimeField, TextChoices, BooleanField, SET_NULL
 from django.db.models import Model, ForeignKey, CASCADE, ManyToManyField
 from django.db.models.fields import CharField, EmailField, IntegerField
 
@@ -15,9 +15,8 @@ class User(AbstractUser):
     avatar = ImageField(upload_to='avatars/%Y/%m/%d/', null=True, blank=True)
     email = EmailField(max_length=255, unique=True)
     bio = RichTextField(null=True, blank=True)
-    location = CharField(max_length=50, null=True, blank=True)
     role = CharField(max_length=25, choices=RoleType.choices, default=RoleType.USER)
-    city = ForeignKey('authentication.City', related_name='users', on_delete=CASCADE)
+    city = ForeignKey('authentication.City', related_name='users', on_delete=SET_NULL, null=True, blank=True)
 
     USERNAME_FIELD = 'email'
     REQUIRED_FIELDS = ['username']
@@ -56,6 +55,7 @@ class Badge(Model):
 
     def __str__(self):
         return self.name
+
 
 class Notifications(Model):
     class NotificationType(TextChoices):
