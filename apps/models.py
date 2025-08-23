@@ -64,3 +64,11 @@ class AnswerComment(Model):
 
     def __str__(self):
         return f"Comment by {self.author.username}"
+
+
+
+class Save(Model):
+    user=ForeignKey('authentication.User', on_delete=CASCADE,related_name='saves')
+    blog=ForeignKey('apps.Blog', on_delete=CASCADE, related_name='saves')
+
+
