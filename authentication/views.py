@@ -1,8 +1,7 @@
 from drf_spectacular.utils import extend_schema, OpenApiParameter
 from rest_framework.generics import CreateAPIView, UpdateAPIView, ListAPIView, RetrieveAPIView, DestroyAPIView
-from rest_framework.permissions import IsAuthenticated, AllowAny
+from rest_framework.permissions import AllowAny
 
-from apps.permissions import IsModerator
 from authentication.models import User, Follow
 from authentication.serializers import UserModelSerializer, UserUpdateSerializer, ChangePasswordSerializer, \
     FollowingModelSerializer
@@ -38,7 +37,6 @@ class UserRetrieveAPIView(RetrieveAPIView):
 @extend_schema(tags=['auth'])
 class UserDeleteAPIView(DestroyAPIView):
     queryset = User.objects.all()
-    permission_classes = [IsModerator]
     serializer_class = UserModelSerializer
 
 
