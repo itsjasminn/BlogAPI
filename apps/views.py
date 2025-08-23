@@ -243,3 +243,9 @@ class AnswerCommentUpdateAPIView(UpdateAPIView):
     serializer_class = AnswerCommentModelSerializer
     queryset = AnswerComment.objects.all()
     lookup_field = 'pk'
+
+
+@extend_schema(tags=['statistics'])
+class StatisticsAPIView(ListAPIView):
+
+

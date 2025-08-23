@@ -1,4 +1,4 @@
-from rest_framework.fields import IntegerField
+from rest_framework.fields import IntegerField, SerializerMethodField
 from rest_framework.serializers import ModelSerializer, Serializer
 
 from apps.models import Blog, BlogImages, Comment, AnswerComment, BlogView, AnswerView, QuestionView
@@ -37,11 +37,12 @@ class BlogImagesModelSerializer(ModelSerializer):
 
 
 class QuestionModelSerializer(ModelSerializer):
+    total_answers = SerializerMethodField()
     author = UserModelSerializer(many=False, read_only=True)
 
     class Meta:
         model = Question
-        fields = ('title', 'content', 'author', 'is_edited')
+        fields = ('title', 'content', 'author', 'is_edited', 'total_answers')
         read_only_fields = ('created_at', 'author', 'is_edited')
 
     def update(self, instance, validated_data):
@@ -52,6 +53,9 @@ class QuestionModelSerializer(ModelSerializer):
             validated_data['is_edited'] = True
 
         return super().update(instance, validated_data)
+
+    def get_total_answers(self, obj):
+        return obj.answers.count()
 
 
 class QuestionViewModelSerializer(ModelSerializer):
