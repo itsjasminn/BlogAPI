@@ -5,12 +5,10 @@ from rest_framework.generics import CreateAPIView, ListAPIView, DestroyAPIView, 
     GenericAPIView
 from rest_framework.response import Response
 
-from apps.models import Blog, BlogImages, Comment, Question, Answer, AnswerComment, AnswerView, QuestionView, BlogView
-from apps.models import Answer, AnswerComment
-from apps.models import Blog, BlogImages, Comment, Question
+from apps.models import Answer, AnswerComment, AnswerView, QuestionView, BlogView, Blog, BlogImages, Comment, Question
 from apps.serializers import BlogModelSerializer, BlogImagesModelSerializer, CommentModelSerializer, LikeSerializer, \
-    QuestionVotesSerializer, AnswerVotesSerializer
-from apps.serializers import QuestionModelSerializer, AnswerModelSerializer, AnswerCommentModelSerializer
+    QuestionVotesSerializer, AnswerVotesSerializer, QuestionModelSerializer, AnswerModelSerializer, \
+    AnswerCommentModelSerializer
 
 
 @extend_schema(tags=['blog'])
@@ -187,7 +185,7 @@ class AnswerDetailAPIView(RetrieveAPIView):
         return Response(data)
 
 
-@extend_schema(tags=['block-comment'])
+@extend_schema(tags=['blog-comment'])
 class CommentCreateAPIView(CreateAPIView):
     serializer_class = CommentModelSerializer
 
@@ -195,7 +193,7 @@ class CommentCreateAPIView(CreateAPIView):
         serializer.save(author=self.request.user)
 
 
-@extend_schema(tags=['block-comment'])
+@extend_schema(tags=['blog-comment'])
 class CommentListAPIView(ListAPIView):
     serializer_class = CommentModelSerializer
     queryset = Comment.objects.all()
@@ -207,7 +205,7 @@ class CommentListAPIView(ListAPIView):
         return query
 
 
-@extend_schema(tags=['block-comment'])
+@extend_schema(tags=['blog-comment'])
 class CommentDestroyAPIView(DestroyAPIView):
     queryset = Comment.objects.all()
     lookup_field = 'pk'
@@ -383,8 +381,5 @@ class AnswerVoteRemoveAPIView(GenericAPIView):
             type = 'downvote'
         return Response({'message': f'{type} olindi'}, status=HTTPStatus.OK)
 
-
-@extend_schema(tags=['statistics'])
-class StatisticsAPIView(ListAPIView):
 
 
