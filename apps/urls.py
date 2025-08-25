@@ -3,7 +3,7 @@ from django.urls import path
 from apps.views import BlogCreateAPIView, BlogListAPIView, BlogDestroyAPIView, BlogUpdateAPIView, BlogDetailAPIView, \
     AnswerCommentDeleteAPIView, AnswerCommentListAPIView, LikeRemoveAPIView, QuestionVoteCountAPIView, \
     QuestionVoteRemoveAPIView, AnswerVoteGenericAPIView, AnswerVoteCountAPIView, AnswerVoteRemoveAPIView, \
-    LikeCountAPIView
+    LikeCountAPIView, CommunityStatsView
 from apps.views import BlogImagesCreateAPIView
 from apps.views import BlogImagesDetailAPIView, BlogImagesUpdateAPIView, BlogImagesDestroyAPIView
 from apps.views import BlogImagesListAPIView, CommentCreateAPIView, CommentListAPIView, LikeGenericAPIView
@@ -46,9 +46,9 @@ urlpatterns += [
     path('answer-delete/<int:pk>', AnswerDeleteAPIView.as_view()),
     path('answer-update/<int:pk>', AnswerUpdateAPIView.as_view()),
     path('answer-detail/<int:pk>', AnswerDetailAPIView.as_view()),
-    path('block/like', LikeGenericAPIView.as_view()),
-    path('block/like/count/<int:pk>', LikeCountAPIView.as_view()),
-    path('block/like/remove', LikeRemoveAPIView.as_view()),
+    path('blog/like', LikeGenericAPIView.as_view()),
+    path('blog/like/count/<int:pk>', LikeCountAPIView.as_view()),
+    path('blog/like/remove', LikeRemoveAPIView.as_view()),
 
 ]
 
@@ -75,8 +75,14 @@ urlpatterns += [
     path('question/count/votes/<int:pk>/', QuestionVoteCountAPIView.as_view()),
     path('question/remove/votes', QuestionVoteRemoveAPIView.as_view()),
 ]
+
 urlpatterns += [
     path('answers/votes', AnswerVoteGenericAPIView.as_view()),
     path('answers/count/votes/<int:pk>/', AnswerVoteCountAPIView.as_view()),
     path('answers.remove/votes', AnswerVoteRemoveAPIView.as_view()),
+]
+
+# statistics
+urlpatterns += [
+    path('community-stats/', CommunityStatsView.as_view(), name='community-stats'),
 ]

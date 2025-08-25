@@ -121,7 +121,6 @@ class FollowDestroyAPIView(DestroyAPIView):
 
     def get_object(self):
         follow_id = self.kwargs.get(self.lookup_field)
-        # user.id bilan tekshirish
         obj = Follow.objects.filter(following=follow_id).first()
         if not obj:
             raise NotFound("Follow topilmadi yoki sizga tegishli emas")

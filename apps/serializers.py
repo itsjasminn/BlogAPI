@@ -3,6 +3,7 @@ from rest_framework.serializers import ModelSerializer, Serializer
 
 from apps.models import Blog, BlogImages, Comment, AnswerComment, BlogView, AnswerView, QuestionView
 from apps.models import Question, Answer
+from authentication.models import User
 from authentication.serializers import UserModelSerializer
 
 
@@ -131,3 +132,18 @@ class AnswerCommentModelSerializer(ModelSerializer):
             validated_data['is_edited'] = True
 
         return super().update(instance, validated_data)
+
+
+class ContributorSerializer(ModelSerializer):
+    total_contributions = IntegerField()
+
+    class Meta:
+        model = User
+        fields = ('id', 'username', 'total_contributions', 'avatar', 'full_name')
+
+
+class CommunityStatsSerializer(Serializer):
+    total_questions = IntegerField()
+    active_users = IntegerField()
+    answered_today = IntegerField()
+    top_contributors = ContributorSerializer(many=True)

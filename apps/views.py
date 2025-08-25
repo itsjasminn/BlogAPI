@@ -1,14 +1,18 @@
 from http import HTTPStatus
 
+from django.db.models.aggregates import Count
+from django.utils.timezone import now
 from drf_spectacular.utils import extend_schema, OpenApiParameter
 from rest_framework.generics import CreateAPIView, ListAPIView, DestroyAPIView, UpdateAPIView, RetrieveAPIView, \
     GenericAPIView
 from rest_framework.response import Response
+from rest_framework.views import APIView
 
 from apps.models import Answer, AnswerComment, AnswerView, QuestionView, BlogView, Blog, BlogImages, Comment, Question
 from apps.serializers import BlogModelSerializer, BlogImagesModelSerializer, CommentModelSerializer, LikeSerializer, \
     QuestionVotesSerializer, AnswerVotesSerializer, QuestionModelSerializer, AnswerModelSerializer, \
-    AnswerCommentModelSerializer
+    AnswerCommentModelSerializer, ContributorSerializer, CommunityStatsSerializer
+from authentication.models import User
 
 
 @extend_schema(tags=['blog'])
@@ -382,4 +386,37 @@ class AnswerVoteRemoveAPIView(GenericAPIView):
         return Response({'message': f'{type} olindi'}, status=HTTPStatus.OK)
 
 
+@extend_schema(tags=['statistics'])
+class CommunityStatsView(APIView):
+    def get(self, request):
+        total_questions = Question.objects.count()
 
+        answered_today = Answer.objects.filter(created_at__date=now().date()).count()
+
+        active_users = (
+            User.objects
+            .annotate(
+                contributions=Count('questions', distinct=True) + Count('answers', distinct=True)
+            )
+            .filter(contributions__gte=3)
+            .count()
+        )
+
+        top_contributors_qs = (
+            User.objects
+            .annotate(
+                total_contributions=Count('questions', distinct=True) + Count('answers', distinct=True)
+            )
+            .order_by('-total_contributions')[:3]
+        )
+        contributors_data = ContributorSerializer(top_contributors_qs, many=True).data
+
+        stats_data = {
+            "total_questions": total_questions,
+            "active_users": active_users,
+            "answered_today": answered_today,
+            "top_contributors": contributors_data,
+        }
+
+        serializer = CommunityStatsSerializer(stats_data)
+        return Response(serializer.data)

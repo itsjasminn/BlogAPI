@@ -6,7 +6,7 @@ from pathlib import Path
 from dotenv import load_dotenv
 from redis import Redis
 
-from core.config import EmailConfig
+from core.config import EmailConfig, DatabaseConfig
 
 load_dotenv()
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -66,12 +66,23 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'root.wsgi.application'
 
+
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.sqlite3',
         'NAME': BASE_DIR / 'db.sqlite3',
     }
 }
+# DATABASES = {
+#     'default': {
+#         'ENGINE': 'django.db.backends.postgresql',
+#         'NAME': DatabaseConfig.DB_NAME,
+#         'USER': DatabaseConfig.DB_USER,
+#         'PASSWORD': DatabaseConfig.DB_PASS,
+#         'HOST': DatabaseConfig.DB_HOST,
+#         'PORT': DatabaseConfig.DB_PORT,
+#     }
+# }
 
 AUTH_PASSWORD_VALIDATORS = [
     {
