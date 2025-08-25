@@ -4,6 +4,7 @@ from http import HTTPStatus
 from drf_spectacular.utils import extend_schema, OpenApiParameter
 from orjson import orjson
 from rest_framework.exceptions import NotFound
+from rest_framework.filters import SearchFilter
 from rest_framework.generics import CreateAPIView, UpdateAPIView, ListAPIView, RetrieveAPIView, DestroyAPIView
 from rest_framework.generics import GenericAPIView
 from rest_framework.permissions import AllowAny
@@ -55,6 +56,8 @@ class UserUpdateAPIView(UpdateAPIView):
 class UserListAPIView(ListAPIView):
     queryset = User.objects.all()
     serializer_class = UserModelSerializer
+    filter_backends = [SearchFilter]
+    search_fields = ['username', 'first_name', 'last_name']
 
 
 @extend_schema(tags=['auth'])

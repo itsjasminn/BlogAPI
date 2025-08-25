@@ -34,6 +34,9 @@ INSTALLED_APPS = [
     # JWT
     'rest_framework_simplejwt',
 
+    # filter
+    'django_filters'
+
 ]
 
 MIDDLEWARE = [
@@ -123,7 +126,9 @@ REST_FRAMEWORK = {
     'DEFAULT_SCHEMA_CLASS': 'drf_spectacular.openapi.AutoSchema',
     'DEFAULT_AUTHENTICATION_CLASSES': (
         'rest_framework_simplejwt.authentication.JWTAuthentication',
-    )
+    ),
+    'DEFAULT_FILTER_BACKENDS': ['django_filters.rest_framework.DjangoFilterBackend']
+
 }
 
 SPECTACULAR_SETTINGS = {

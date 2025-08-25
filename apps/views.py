@@ -2,7 +2,9 @@ from http import HTTPStatus
 
 from django.db.models.aggregates import Count
 from django.utils.timezone import now
+from drf_spectacular.types import OpenApiTypes
 from drf_spectacular.utils import extend_schema, OpenApiParameter
+from rest_framework.filters import SearchFilter
 from rest_framework.generics import CreateAPIView, ListAPIView, DestroyAPIView, UpdateAPIView, RetrieveAPIView, \
     GenericAPIView
 from rest_framework.response import Response
@@ -104,10 +106,49 @@ class QuestionCreateAPIView(CreateAPIView):
         serializer.save(author=self.request.user)
 
 
-@extend_schema(tags=['question'])
+@extend_schema(
+    tags=['question'],
+    parameters=[
+        OpenApiParameter(
+            name='filter',
+            description="Filter questions: 'recent', 'popular', 'unanswered'",
+            required=False,
+            type=OpenApiTypes.STR,
+            location=OpenApiParameter.QUERY,
+        ),
+        OpenApiParameter(
+            name='search',
+            description="Search by title or content",
+            required=False,
+            type=OpenApiTypes.STR,
+            location=OpenApiParameter.QUERY,
+        ),
+    ],
+)
 class QuestionListAPIView(ListAPIView):
     serializer_class = QuestionModelSerializer
     queryset = Question.objects.all()
+    filter_backends = [SearchFilter]
+    search_fields = ['title', 'content']
+
+    def get_queryset(self):
+        queryset = super().get_queryset()
+        filter_type = self.request.query_params.get('filter')
+
+        if filter_type == 'recent':
+            queryset = queryset.order_by('-created_at')
+
+        elif filter_type == 'popular':
+            queryset = queryset.annotate(
+                views_count=Count('question_views')
+            ).order_by('-views_count')
+
+        elif filter_type == 'unanswered':
+            queryset = queryset.annotate(
+                answers_count=Count('answers')
+            ).filter(answers_count=0).order_by('-created_at')
+
+        return queryset
 
 
 @extend_schema(tags=['question'])
