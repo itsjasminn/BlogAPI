@@ -3,14 +3,14 @@ version: '3.8'
 services:
   web:
     build: .
-    image: lead
-    container_name: lead_con
+    image: blog
+    container_name: blog_con
     restart: always
-    command: 'sh -c "python manage.py makemigrations && 
-              python manage.py migrate && 
-              python manage.py runserver 0.0.0.0:8000'
+    command: >
+      sh -c "python manage.py migrate &&
+             python manage.py runserver 0.0.0.0:8000"
     ports:
-      - '8000:8000'
+      - "8001:8001"
     depends_on:
       - db
 
@@ -36,12 +36,13 @@ services:
 
   celery:
     build: .
-    image: celery_blog
+    image: blog_celery
     container_name: celery_con
     restart: always
-    command: celery -A instruments.tasks:app worker --loglevel=info --pool=solo
+    command: celery -A root --loglevel=info --pool=solo
     depends_on:
-      - rd
+      - db
 
 volumes:
   pg_data:
+  redis_data:
