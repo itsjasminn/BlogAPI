@@ -10,11 +10,12 @@ from rest_framework.generics import CreateAPIView, ListAPIView, DestroyAPIView, 
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
-from apps.models import Answer, AnswerComment, AnswerView, QuestionView, BlogView, Blog, BlogImages, Comment, Question
+from apps.models import Answer, AnswerComment, BlogView, QuestionView, AnswerView
+from apps.models import Blog, BlogImages, Comment, Question
 from apps.serializers import BlogModelSerializer, BlogImagesModelSerializer, CommentModelSerializer, LikeSerializer, \
-    QuestionVotesSerializer, AnswerVotesSerializer, QuestionModelSerializer, AnswerModelSerializer, \
-    AnswerCommentModelSerializer, ContributorSerializer, CommunityStatsSerializer
+    QuestionVotesSerializer, AnswerVotesSerializer, ContributorSerializer, CommunityStatsSerializer
 from authentication.models import User
+from apps.serializers import QuestionModelSerializer, AnswerModelSerializer, AnswerCommentModelSerializer
 
 
 @extend_schema(tags=['blog'])
@@ -230,7 +231,10 @@ class AnswerDetailAPIView(RetrieveAPIView):
         return Response(data)
 
 
-@extend_schema(tags=['blog-comment'])
+# ==================================================================Comment
+
+
+@extend_schema(tags=['block-comment'])
 class CommentCreateAPIView(CreateAPIView):
     serializer_class = CommentModelSerializer
 
@@ -238,7 +242,7 @@ class CommentCreateAPIView(CreateAPIView):
         serializer.save(author=self.request.user)
 
 
-@extend_schema(tags=['blog-comment'])
+@extend_schema(tags=['block-comment'])
 class CommentListAPIView(ListAPIView):
     serializer_class = CommentModelSerializer
     queryset = Comment.objects.all()
