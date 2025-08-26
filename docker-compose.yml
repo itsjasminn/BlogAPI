@@ -16,7 +16,7 @@ services:
 
   db:
     image: postgres:alpine
-    container_name: pg6
+    container_name: pg2
     restart: always
     ports:
       - '5433:5432'
@@ -36,8 +36,8 @@ services:
 
   celery:
     build: .
-    image: fast_celery
-    container_name: cla
+    image: celery_blog
+    container_name: celery_con
     restart: always
     command: celery -A instruments.tasks:app worker --loglevel=info --pool=solo
     depends_on:
