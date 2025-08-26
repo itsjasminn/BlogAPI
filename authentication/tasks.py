@@ -16,9 +16,9 @@ def send_code_email(user_email: dict, code):
         "code": code,
         "verify_url": f"http://localhost:8000/verify/{code}"
     }
-
+    print(context)
     # Render HTML
-    html_content = render_to_string("verification_email.html", context)
+    html_content = render_to_string("verification_email.html", context=context)
     text_content = f"Your verification code is {code}"  # fallback plain text
 
     # Create email
