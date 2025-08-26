@@ -10,10 +10,10 @@ from rest_framework.generics import CreateAPIView, ListAPIView, DestroyAPIView, 
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
-from apps.models import Answer, AnswerComment, AnswerView, QuestionView, BlogView, Blog, BlogImages, Comment, Question
+from apps.models import Answer, AnswerComment, BlogView, QuestionView, AnswerView, Blog, BlogImages, Comment, Question
 from apps.serializers import BlogModelSerializer, BlogImagesModelSerializer, CommentModelSerializer, LikeSerializer, \
-    QuestionVotesSerializer, AnswerVotesSerializer, QuestionModelSerializer, AnswerModelSerializer, \
-    AnswerCommentModelSerializer, ContributorSerializer, CommunityStatsSerializer
+    QuestionVotesSerializer, AnswerVotesSerializer, ContributorSerializer, CommunityStatsSerializer, \
+    QuestionModelSerializer, AnswerModelSerializer, AnswerCommentModelSerializer
 from authentication.models import User
 
 
@@ -251,6 +251,12 @@ class CommentListAPIView(ListAPIView):
 
 
 @extend_schema(tags=['blog-comment'])
+class CommentDestroyAPIView(DestroyAPIView):
+    queryset = Comment.objects.all()
+    lookup_field = 'pk'
+
+
+@extend_schema(tags=['block-comment'])
 class CommentDestroyAPIView(DestroyAPIView):
     queryset = Comment.objects.all()
     lookup_field = 'pk'

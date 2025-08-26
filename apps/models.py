@@ -1,6 +1,5 @@
 from ckeditor.fields import RichTextField
-from django.db.models import ImageField, DateTimeField
-from django.db.models import Model, ForeignKey, CASCADE, ManyToManyField
+from django.db.models import ImageField, DateTimeField, Model, ForeignKey, CASCADE, ManyToManyField
 from django.db.models.fields import CharField, BooleanField
 
 
@@ -61,7 +60,6 @@ class QuestionView(Model):
     viewed_at = DateTimeField(auto_now=True)
 
 
-
 class Answer(Model):
     question = ForeignKey('apps.Question', on_delete=CASCADE, related_name="answers")
     author = ForeignKey('authentication.User', on_delete=CASCADE, related_name="answers")
@@ -95,9 +93,6 @@ class AnswerComment(Model):
         return f"Comment by {self.author.username}"
 
 
-
 class Save(Model):
-    user=ForeignKey('authentication.User', on_delete=CASCADE,related_name='saves')
-    blog=ForeignKey('apps.Blog', on_delete=CASCADE, related_name='saves')
-
-
+    user = ForeignKey('authentication.User', on_delete=CASCADE, related_name='saves')
+    blog = ForeignKey('apps.Blog', on_delete=CASCADE, related_name='saves')
