@@ -1,0 +1,47 @@
+version: '3.8'
+
+services:
+  web:
+    build: .
+    image: lead
+    container_name: lead_con
+    restart: always
+    command: 'sh -c "python manage.py makemigrations && 
+              python manage.py migrate && 
+              python manage.py runserver 0.0.0.0:8000'
+    ports:
+      - '8000:8000'
+    depends_on:
+      - db
+
+  db:
+    image: postgres:alpine
+    container_name: pg6
+    restart: always
+    ports:
+      - '5433:5432'
+    environment:
+      POSTGRES_PASSWORD: 1
+    volumes:
+      - pg_data:/var/lib/postgresql/data
+
+  rd:
+    image: redis:alpine
+    container_name: rd2
+    restart: always
+    ports:
+      - "6380:6379"
+    volumes:
+      - redis_data:/data
+
+  celery:
+    build: .
+    image: fast_celery
+    container_name: cla
+    restart: always
+    command: celery -A instruments.tasks:app worker --loglevel=info --pool=solo
+    depends_on:
+      - rd
+
+volumes:
+  pg_data:
