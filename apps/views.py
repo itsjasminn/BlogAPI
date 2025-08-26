@@ -5,7 +5,7 @@ from rest_framework.generics import CreateAPIView, ListAPIView, DestroyAPIView, 
     GenericAPIView
 from rest_framework.response import Response
 
-from apps.models import Answer, AnswerComment
+from apps.models import Answer, AnswerComment, BlogView, QuestionView, AnswerView
 from apps.models import Blog, BlogImages, Comment, Question
 from apps.serializers import BlogModelSerializer, BlogImagesModelSerializer, CommentModelSerializer, LikeSerializer, \
     QuestionVotesSerializer, AnswerVotesSerializer
@@ -388,5 +388,4 @@ class AnswerVoteRemoveAPIView(GenericAPIView):
 
 @extend_schema(tags=['statistics'])
 class StatisticsAPIView(ListAPIView):
-
-
+    pass
