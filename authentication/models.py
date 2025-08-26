@@ -2,7 +2,7 @@ from ckeditor.fields import RichTextField
 from django.contrib.auth.models import AbstractUser, UserManager
 from django.db.models import ImageField, DateTimeField, TextChoices, BooleanField, SET_NULL
 from django.db.models import Model, ForeignKey, CASCADE, ManyToManyField
-from django.db.models.fields import CharField, EmailField
+from django.db.models.fields import CharField, EmailField, PositiveIntegerField
 
 
 class User(AbstractUser):
@@ -15,6 +15,7 @@ class User(AbstractUser):
     bio = RichTextField(null=True, blank=True)
     role = CharField(max_length=25, choices=RoleType.choices, default=RoleType.USER)
     city = ForeignKey('authentication.City', related_name='users', on_delete=SET_NULL, null=True, blank=True)
+    reputation = PositiveIntegerField(default=0)
 
     USERNAME_FIELD = 'email'
     REQUIRED_FIELDS = ['username']
@@ -57,13 +58,14 @@ class Badge(Model):
 
 class Notifications(Model):
     class NotificationType(TextChoices):
-        NEW_FOLLOWER = 'new_follower', 'New Follower'
-        ANSWER_UPVOTE = 'answer_upvote', 'Answer Upvote'
-        BLOG_COMMENT = 'blog_comment', 'Blog Comment'
-        WARNING = 'warning', 'Moderator Warning'
+        LIKED = 'liked', 'liked'
+        FOLLOWED = 'followed', 'followed'
+        COMMENTED = 'commented', 'commented'
+        SAVED = 'saved', 'Saved'
 
     recipient = ForeignKey('authentication.User', on_delete=CASCADE, related_name="notifications")
-    type = CharField(max_length=20, choices=NotificationType.choices, default=NotificationType.NEW_FOLLOWER)
+    sender = ForeignKey('authentication.User', on_delete=CASCADE, related_name="notification")
+    type = CharField(max_length=20, choices=NotificationType.choices)
     message = RichTextField()
     created_at = DateTimeField(auto_now_add=True)
     is_read = BooleanField(default=False)

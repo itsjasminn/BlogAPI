@@ -7,7 +7,7 @@ from rest_framework.exceptions import ValidationError
 from rest_framework.fields import CharField
 from rest_framework.serializers import ModelSerializer, Serializer
 
-from authentication.models import User, Follow
+from authentication.models import User, Follow, Notifications
 from root.settings import redis
 
 
@@ -128,6 +128,19 @@ class FollowingModelSerializer(ModelSerializer):
 
     def validate_following(self, value):
         user = self.context['request'].user
+        if user != value:
+            Notifications.objects.create(
+                recipient=value,
+                sender=user,
+                message='started following you',
+                type=Notifications.NotificationType.FOLLOWED.value
+            )
         if user == value:
             raise ValidationError("Siz ozingizga ozingiz obuna bololmaysiz")
         return value
+
+
+class NotificationModelSerializer(ModelSerializer):
+    class Meta:
+        model = Notifications
+        fields = ('id', 'recipient', 'sender', 'message', 'created_at', 'is_read')

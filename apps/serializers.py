@@ -1,9 +1,9 @@
 from rest_framework.fields import IntegerField, SerializerMethodField
 from rest_framework.serializers import ModelSerializer, Serializer
 
-from apps.models import Blog, BlogImages, Comment, AnswerComment, BlogView, AnswerView, QuestionView
+from apps.models import Blog, BlogImages, Comment, AnswerComment, BlogView, AnswerView, QuestionView, Save
 from apps.models import Question, Answer
-from authentication.models import User
+from authentication.models import User, Notifications
 from authentication.serializers import UserModelSerializer
 
 
@@ -115,6 +115,18 @@ class CommentModelSerializer(ModelSerializer):
         fields = ('id', 'author', 'content', 'created_at', 'blog')
         read_only_fields = ('id', 'created_at', 'author')
 
+    def validate_blog(self, value):
+        recipient = value.author
+        sender = self.context["request"].user
+        if sender != recipient:
+            Notifications.objects.create(
+                recipient=recipient,
+                sender=sender,
+                message='commented on your post',
+                type=Notifications.NotificationType.COMMENTED.value
+            )
+        return value
+
 
 class AnswerCommentModelSerializer(ModelSerializer):
     author = UserModelSerializer(many=False, read_only=True)
@@ -147,3 +159,22 @@ class CommunityStatsSerializer(Serializer):
     active_users = IntegerField()
     answered_today = IntegerField()
     top_contributors = ContributorSerializer(many=True)
+
+
+class SaveModelSerializer(ModelSerializer):
+    class Meta:
+        model = Save
+        fields = ('id', 'blog', 'user')
+        read_only_fields = ('id', 'user')
+
+    def validate_blog(self, value):
+        recipient = value.author
+        sender = self.context["request"].user
+        if sender != recipient:
+            Notifications.objects.create(
+                recipient=recipient,
+                sender=sender,
+                message='commented on your post',
+                type=Notifications.NotificationType.SAVED.value
+            )
+        return value
