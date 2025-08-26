@@ -2,7 +2,6 @@ from django.urls import path
 
 from apps.views import *
 
-# answers
 urlpatterns = [
     path('answer-create', AnswerCreateAPIView.as_view()),
     path('answers', AnswerListAPIView.as_view()),

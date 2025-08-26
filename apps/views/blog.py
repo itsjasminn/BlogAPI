@@ -93,6 +93,7 @@ class BlogImagesListAPIView(ListAPIView):
 
 
 # ==================================================================Like
+
 @extend_schema(tags=['blog-like'])
 class LikeGenericAPIView(GenericAPIView):
     serializer_class = LikeSerializer

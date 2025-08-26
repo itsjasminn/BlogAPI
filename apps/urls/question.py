@@ -2,7 +2,6 @@ from django.urls import path
 
 from apps.views import *
 
-# question
 urlpatterns = [
     path('question-create', QuestionCreateAPIView.as_view()),
     path('questions', QuestionListAPIView.as_view()),
@@ -11,7 +10,6 @@ urlpatterns = [
     path('question-detail/<int:pk>', QuestionDetailAPIView.as_view()),
 ]
 
-# answers
 urlpatterns += [
     path('blog/like', LikeGenericAPIView.as_view()),
     path('blog/like/count/<int:pk>', LikeCountAPIView.as_view()),
