@@ -1,0 +1,122 @@
+1) nano /etc/nginx/sites-available/bloog
+
+2)
+server {
+    listen       8000;
+    server_name  5.129.196.252;
+
+    location = /favicon.ico { access_log off; log_not_found off; }
+
+    location /static/ {
+        root /var/www/bloog/;
+    }
+
+    location /media/ {
+        root /var/www/bloog/;
+    }
+
+    location / {
+        include proxy_params;
+        proxy_pass http://unix:/var/www/bloog/falcon.sock;
+    }
+}
+
+3) ln -s /etc/nginx/sites-available/bloog /etc/nginx/sites-enabled/
+
+
+
+4) nano /etc/systemd/system/bloog.service
+
+
+5)
+[Unit]
+Description=gunicorn daemon
+After=network.target
+
+[Service]
+User=root
+Group=www-data
+WorkingDirectory=/var/www/bloog
+ExecStart=/var/www/bloog/.venv/bin/gunicorn --workers 3 --bind unix:/var/www/bloog/falcon.sock root.wsgi:application
+
+[Install]
+WantedBy=multi-user.target
+
+
+celery :
+4) nano /etc/systemd/system/celery.service
+
+
+5)
+[Unit]
+Description=Celery Service
+After=network.target
+
+[Service]
+Type=forking
+User=root
+Group=your_user
+WorkingDirectory=/var/www/bloog
+ExecStart=/var/www/bloog/.venv/bin/celery -A root.settings worker --loglevel=info --detach
+ExecStop=/bin/pkill -f 'celery worker'
+Restart=always
+
+[Install]
+WantedBy=multi-user.target
+
+
+systemctl stop bloog.service
+systemctl start bloog.service
+systemctl enable bloog.service
+systemctl restart bloog.service
+systemctl status bloog.service
+sudo systemctl enable nginx.service
+sudo systemctl restart nginx.service
+sudo systemctl stop nginx.service
+sudo systemctl start nginx.service
+sudo systemctl status nginx.service
+
+
+
+sudo systemctl enable celery.service
+sudo systemctl stop celery.service
+sudo systemctl start celery.service
+sudo systemctl status celery.service
+
+
+
+1. comp -> github, gitlab, bitbucket -> server
+
+2. comp -> server
+
+
+
+scp file root@IP:/var/www
+python3 manage.py runserver 0:8004
+
+
+
+/etc/nginx/sites-available/allauth
+
+ln -s /etc/nginx/sites-available/debtapi /etc/nginx/sites-enabled/
+
+/etc/nginx/sites-enabled/
+sudo nginx -t
+
+
+ufw:
+    sudo ufw allow 'Nginx HTTP'
+    sudo ufw allow 22 # connect
+    sudo ufw allow 80 # Nginx
+    sudo ufw allow 443 #
+    sudo ufw allow 8000
+
+
+terminalda ishlatish kerak ohirida:
+    ls -l /var/www/alijahon/falcon.sock
+    sudo chown www-data:www-data /var/www/alijahon/falcon.sock
+    sudo chmod 660 /var/www/alijahon/falcon.sock
+    python manage.py collectstatic
+
+
+  CREATE USER blooguser WITH PASSWORD 'abc123456789';

@@ -1,6 +1,5 @@
 from ckeditor.fields import RichTextField
-from django.db.models import ImageField, DateTimeField
-from django.db.models import Model, ForeignKey, CASCADE, ManyToManyField
+from django.db.models import ImageField, DateTimeField, Model, ForeignKey, CASCADE, ManyToManyField
 from django.db.models.fields import CharField, BooleanField
 
 
@@ -59,7 +58,6 @@ class QuestionView(Model):
     question = ForeignKey('apps.Question', on_delete=CASCADE, related_name="question_views")
     user = ForeignKey('authentication.User', on_delete=CASCADE, related_name="question_views")
     viewed_at = DateTimeField(auto_now=True)
-
 
 
 class Answer(Model):
