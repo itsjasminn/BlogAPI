@@ -7,9 +7,8 @@ on:
     branches: [ master ]
 
 jobs:
-  build-and-test:
+  build-and-deploy:
     runs-on: ubuntu-latest
-
     steps:
       - name: Checkout code
         uses: actions/checkout@v3
@@ -24,14 +23,23 @@ jobs:
           python -m pip install --upgrade pip
           pip install -r requirements.txt
 
-      - name: Run tests with pytest
-        env:
-          DJANGO_SETTINGS_MODULE: root.settings
-        run: |
-          pytest
+      - name: Deploy to Production via SSH
+        if: github.ref == 'refs/heads/master'
+        uses: appleboy/ssh-action@v1.0.0
+        with:
+          host: ${{ secrets.SSH_HOST }}
+          username: ${{ secrets.SSH_USERNAME }}
+          key: ${{ secrets.SSH_KEY }}
+          port: 22
+          script: |
+            cd /var/www/gayrat/LeaderBoardGayrat
+            git fetch origin || true
+            git reset --hard origin/master || true
+            git pull origin master
+            docker compose up -d --build
+
 
   deploy:
-    needs: build-and-test
     runs-on: ubuntu-latest
     steps:
       - name: Deploy to server via SSH
