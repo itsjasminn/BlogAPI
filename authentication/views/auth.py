@@ -1,19 +1,19 @@
 import random
-from django.utils import timezone
 from http import HTTPStatus
 
+from django.utils import timezone
 from drf_spectacular.utils import extend_schema
 from orjson import orjson
 from rest_framework.generics import GenericAPIView
 from rest_framework.permissions import AllowAny
 from rest_framework.response import Response
+from rest_framework_simplejwt.views import TokenObtainPairView, TokenRefreshView
 
 from authentication.models import User
 from authentication.serializers import UserModelSerializer
 from authentication.serializers import VerifyCodeSerializer
 from authentication.tasks import send_code_email
 from root.settings import redis
-from rest_framework_simplejwt.views import TokenObtainPairView, TokenRefreshView
 
 
 @extend_schema(tags=['auth'])

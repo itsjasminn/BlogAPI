@@ -5,8 +5,8 @@ from rest_framework.generics import CreateAPIView, ListAPIView, DestroyAPIView, 
 from rest_framework.generics import GenericAPIView, RetrieveAPIView
 from rest_framework.response import Response
 
-from apps.models import Answer, AnswerComment, AnswerView
-from apps.serializers import AnswerModelSerializer, AnswerCommentModelSerializer
+from apps.models import Answer, AnswerView
+from apps.serializers import AnswerModelSerializer
 from apps.serializers import AnswerVotesSerializer
 
 
@@ -56,10 +56,7 @@ class AnswerDetailAPIView(RetrieveAPIView):
         data['views'] = instance.answer_views.count()
         return Response(data)
 
-# ==================================================================Like
 
-
-# ==================================================================Upvotes-Downvotes================================
 @extend_schema(tags=['answer-vote'], parameters=[
     OpenApiParameter(
         type=str,
