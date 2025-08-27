@@ -1,24 +1,23 @@
-  build-and-deploy:   # 🚀 CD (Continuous Deployment)
-    needs: build-and-test   # faqat testlar o‘tgandan keyin ishlaydi
-    runs-on: ubuntu-latest
-
-    steps:
-      - name: Deploy to Production via SSH
-        if: github.ref == 'refs/heads/master'
-        uses: appleboy/ssh-action@v1.0.0
-        with:
-          host: ${{ secrets.SSH_HOST }}
-          username: ${{ secrets.SSH_USERNAME }}
-          key: ${{ secrets.SSH_KEY }}
-          port: 22
-          script: |
-            cd /var/www/gayrat/LeaderBoardGayrat
-            git fetch origin || true
-            git reset --hard origin/master || true
-            git remote remove origin || true
-            git remote add origin https://github.com/dilshodev-py/LeaderBoardGayrat.git
-            git pull origin master
-            make mig
-            systemctl restart leader_board.service
-            sudo systemctl enable nginx.service
-            sudo systemctl restart nginx.service
+build-and-deploy: # 🚀 CD (Continuous Deployment)
+  needs: build-and-test   # faqat testlar o‘tgandan keyin ishlaydi
+  runs-on: ubuntu-latest
+  steps:
+    - name: Deploy to Production via SSH (Docker)
+      if: github.ref == 'refs/heads/master'
+      uses: appleboy/ssh-action@v1.0.0
+      with:
+        host: ${{ secrets.SSH_HOST }}
+        username: ${{ secrets.SSH_USERNAME }}
+        key: ${{ secrets.SSH_KEY }}
+        port: 22
+        script: |
+          cd /var/www/Block
+          git fetch origin || true
+          git reset --hard origin/master || true
+          git remote remove origin || true
+          git remote add origin https://github.com/itsjasminn/Bloog.git
+          git pull origin master
+          # 🔹 Docker build & run
+          docker compose down
+          docker compose build --no-cache
+          docker compose up -d
