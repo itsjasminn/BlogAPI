@@ -26,7 +26,7 @@ class UserGenericAPIView(GenericAPIView):
         serializer.is_valid(raise_exception=True)
         user = serializer.validated_data
         code = str(random.randrange(10 ** 5, 10 ** 6))
-        send_code_email.delay(user, code)
+        send_code_email(user, code)
         redis.set(code, orjson.dumps(user))
         return Response({'message': 'Tastiqlash kodi jonatilid'}, status=HTTPStatus.OK)
 
