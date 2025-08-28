@@ -1,31 +1,32 @@
-1) nano /etc/nginx/sites-available/bloog
+
+1) nano /etc/nginx/sites-available/Blog
 
 2)
 server {
-    listen       8000;
-    server_name  5.129.196.252;
+    listen       8001;
+    server_name  185.207.65.205;
 
     location = /favicon.ico { access_log off; log_not_found off; }
 
     location /static/ {
-        root /var/www/bloog/;
+        root /var/www/Blog/;
     }
 
     location /media/ {
-        root /var/www/bloog/;
+        root /var/www/Blog/;
     }
 
     location / {
         include proxy_params;
-        proxy_pass http://unix:/var/www/bloog/falcon.sock;
+        proxy_pass http://unix:/var/www/Blog/falcon.sock;
     }
 }
 
-3) ln -s /etc/nginx/sites-available/bloog /etc/nginx/sites-enabled/
+3) ln -s /etc/nginx/sites-available/Blog /etc/nginx/sites-enabled/
 
 
 
-4) nano /etc/systemd/system/bloog.service
+4) nano /etc/systemd/system/Blog.service
 
 
 5)
@@ -36,8 +37,8 @@ After=network.target
 [Service]
 User=root
 Group=www-data
-WorkingDirectory=/var/www/bloog
-ExecStart=/var/www/bloog/.venv/bin/gunicorn --workers 3 --bind unix:/var/www/bloog/falcon.sock root.wsgi:application
+WorkingDirectory=/var/www/project
+ExecStart=/var/www/Blog/.venv/bin/gunicorn --workers 3 --bind unix:/var/www/project/falcon.sock root.wsgi:application
 
 [Install]
 WantedBy=multi-user.target
@@ -56,8 +57,8 @@ After=network.target
 Type=forking
 User=root
 Group=your_user
-WorkingDirectory=/var/www/bloog
-ExecStart=/var/www/bloog/.venv/bin/celery -A root.settings worker --loglevel=info --detach
+WorkingDirectory=/var/www/Blog
+ExecStart=/var/www/Blog/.venv/bin/celery -A root.settings worker --loglevel=info --detach
 ExecStop=/bin/pkill -f 'celery worker'
 Restart=always
 
@@ -65,11 +66,11 @@ Restart=always
 WantedBy=multi-user.target
 
 
-systemctl stop bloog.service
-systemctl start bloog.service
-systemctl enable bloog.service
-systemctl restart bloog.service
-systemctl status bloog.service
+systemctl stop Blog.service
+systemctl start Blog.service
+systemctl enable Blog.service
+systemctl restart Blog.service
+systemctl status Blog.service
 sudo systemctl enable nginx.service
 sudo systemctl restart nginx.service
 sudo systemctl stop nginx.service
@@ -117,6 +118,3 @@ terminalda ishlatish kerak ohirida:
     sudo chown www-data:www-data /var/www/alijahon/falcon.sock
     sudo chmod 660 /var/www/alijahon/falcon.sock
     python manage.py collectstatic
-
-
-  CREATE USER blooguser WITH PASSWORD 'abc123456789';

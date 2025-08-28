@@ -23,24 +23,5 @@ services:
     volumes:
       - pg_data:/var/lib/postgresql/data
 
-  rd:
-    image: redis:alpine
-    container_name: rd2
-    restart: always
-    ports:
-      - "6380:6379"
-    volumes:
-      - redis_data:/data
-
-  celery:
-    build: .
-    image: blog_celery
-    container_name: celery_con
-    restart: always
-    command: celery -A root worker --loglevel=info --pool=solo
-    depends_on:
-      - rd
-
 volumes:
   pg_data:
-  redis_data:
