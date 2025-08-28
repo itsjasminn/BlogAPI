@@ -23,6 +23,15 @@ services:
     volumes:
       - pg_data:/var/lib/postgresql/data
 
+  rd:
+    image: redis:alpine
+    container_name: rd2
+    restart: always
+    ports:
+      - "6380:6379"
+    volumes:
+      - redis_data:/data
+
 volumes:
   pg_data:
   redis_data:
