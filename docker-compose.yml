@@ -23,6 +23,15 @@ services:
     volumes:
       - pg_data:/var/lib/postgresql/data
 
+  celery:
+    build: .
+    image: celery_blog
+    container_name: celery_con
+    restart: always
+    command: celery -A instruments.tasks:app worker --loglevel=info --pool=solo
+    depends_on:
+      - rd
+
   rd:
     image: redis:alpine
     container_name: rd2
